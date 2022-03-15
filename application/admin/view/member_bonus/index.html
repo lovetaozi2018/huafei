@@ -1,0 +1,82 @@
+{extend name="common" /}
+<!-- 菜单开始 -->
+{block name="menu"}
+{include file="left" /}
+{/block}
+{block name="content"}
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="navbar navbar-default">
+                <form action="" id="search-form2" class="navbar-form form-inline" method="get" onsubmit="return false">
+                    <span class="control-label"><i class="fa fa-sun-o"></i>&nbsp;对碰百分比设置</span>
+                    <div class="pull-right">
+                        <a href="{:url('member_bonus/add')}" class="btn btn-sm btn-info edit_btn"><i class="fa fa-plus"></i>添加</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- /.box-header -->
+            <div class="box-body">
+                <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>会员层级</th>
+                        <th>百分比</th>
+                        <th>时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {volist name="memberBonus" id="v"}
+                    <tr>
+                        <td>{$v.id}</td>
+                        <td>{$v.level}</td>
+                        <td>{$v.percent}%</td>
+                        <td>{$v.created_at}</td>
+                        <td>
+                            <a href="{:url('member_bonus/edit',['id'=> $v.id])}"
+                               class="btn btn-success btn-icon btn-circle btn-xs"><i class="fa fa-edit"></i></a>
+                            <a data-id="{$v.id}" href="javascript:void(0)" class="btn btn-danger btn-icon btn-circle btn-xs delete" ><i class="fa fa-trash"></i></a>
+                        </td>
+                    </tr>
+                    {/volist}
+                    </tbody>
+
+                </table>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+    </div>
+    <!-- /.col -->
+    <!-- /.row -->
+</section>
+{/block}
+{block name="js"}
+<script>
+    $('.delete').on('click', function () {
+        var id = $(this).eq(0).attr('data-id');
+        var url = window.location.href;
+        layer.confirm('确认删除该数据吗 ?', {
+            btn: ['确认', '取消'] //按钮
+        }, function () {
+            $.post('{:url("news/delete")}', {id: id},
+                function (data) {
+                    if (data.code == 200) {
+                        layer.msg('删除成功', {icon: 1});
+                        setTimeout(function () {
+                            window.location.href = url;
+                        }, 2000);
+                    } else {
+                        layer.msg('删除失败', {icon: 2});
+                    }
+                })
+
+        });
+    });
+
+</script>
+{/block}

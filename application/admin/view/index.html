@@ -1,0 +1,82 @@
+<extend name="public/common"/>
+<block name="main">
+
+    <div class="col-md-12 box box-solid">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-list"></i> 管理员管理</h3>
+        </div>
+
+        <div class="navbar navbar-default">
+            <form action="" id="search-form2" class="navbar-form form-inline" method="get" onsubmit="return false">
+                <label class="control-label">姓名</label>
+                <input type="text" name="real_name" value="{$Think.get.real_name}" placeholder="管理员姓名" class="form-control">
+                <label class="control-label">所属角色</label>
+                <select class="form-control" name="role_id">
+                    <option value="">全部</option>
+                    <volist name="role" id="v">
+                        <option <if condition="$v.id == @$Think.get.role_id">selected </if> value="{$v.id}">{$v.name}</option>
+                    </volist>
+                </select>
+                <button type="submit" onclick="javascript:document.getElementById('search-form2').submit();"
+                        id="button-filter search-order" class="btn btn-primary"><i class="fa fa-search"></i>
+                    筛选
+                </button>
+                <div class="pull-right">
+                    <a href="{:url('/admin/add')}" class="btn btn-primary edit_btn"><i class="fa fa-plus"></i>添加</a>
+                </div>
+            </form>
+        </div>
+        <div class="box-body table-responsive no-padding">
+            <table class="table table-bordered table-hover">
+                <thead>
+                <tr>
+                    <th>账号</th>
+                    <th>姓名</th>
+                    <th>电话</th>
+                    <th>角色</th>
+                    <th>入职时间</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <volist name="rows" id="vo">
+                    <tr>
+                        <td>{$vo.admin_name}</td>
+                        <td>{$vo.real_name}</td>
+                        <td>{$vo.phone}</td>
+                        <td>{$vo->role['name']}</td>
+                        <td>
+                            {$vo.regtime|date='Y-m-d H:i:s'}
+                        </td>
+                        <td>
+                            <switch name="vo.status">
+                                <case value="0" break="1">禁用</case>
+                                <case value="1" break="1">正常</case>
+                            </switch>
+                        </td>
+                        <td>
+                            <a href="{:url('/admin/edit',['id'=>$vo['admin_id']])}"
+                               class="btn btn-primary edit_btn">编辑</a>
+                            <a href="javascript:;" class="btn btn-danger ajax_get" onclick="toConfirm('确认删除改账号？','/admin/delete?id={$vo.admin_id}')"><i class="fa fa-trash-o"></i></a>
+                        </td>
+                    </tr>
+
+                </volist>
+
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            {$rows->render()|raw}
+        </div>
+    </div>
+
+
+</block>
+
+
+
+
+

@@ -1,0 +1,89 @@
+{extend name="common" /}
+<!-- 菜单开始 -->
+{block name="menu"}
+{include file="left" /}
+{/block}
+{block name="content"}
+<div class="box box-widget">
+    <div class="box-header with-border">
+        <span id="breadcrumb" style="color: #999; font-size: 13px;">会员层级奖励/{if isset($vip)}编辑{else/}添加{/if}设置</span>
+        <div class="box-tools pull-right">
+            <button id="record-list" type="button" class="btn btn-box-tool">
+                <a href="{:url('member_bonus/index')}"><i class="fa fa-mail-reply text-blue"> 返回列表</i></a>
+            </button>
+        </div>
+    </div>
+    <div class="box-body">
+        <form class="form-horizontal m-t" id="signupForm" action="" method="post"
+              enctype="multipart/form-data">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">子级层级：</label>
+                <div class="col-sm-4">
+                    <input name="level" class="form-control" type="text" id="level" placeholder="填写整数(如:第一级子级填写1)"
+                           value="{$memberBonus.level|default=''}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">收益百分比：</label>
+                <div class="col-sm-4">
+                    <input name="percent" class="form-control" type="text" id="percent" placeholder="填写整数(如:80)"
+                           value="{$memberBonus.percent|default=''}">
+                </div>
+            </div>
+
+            <input type="hidden" name="id" id="id" value="{$memberBonus.id|default=''}" />
+            <div class="form-group">
+                <div class="col-sm-6 col-sm-offset-3">
+<!--                    <button class="btn btn-primary submit" type="submit">提交</button>-->
+                    <button class="btn btn-primary submit" id="save">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+
+{block name="js"}
+<script src="/static/kindeditor/kindeditor-all-min.js"></script>
+<script src="/static/kindeditor/lang/zh-CN.js"></script>
+<script type="text/javascript">
+    $('#save').on('click', function (e) {
+        e.preventDefault();
+        var formData = new FormData();
+        var id = $('#id').val();
+        var level = $('#level').val();
+        var percent = $('#percent').val();
+        if (!level) {
+            layer.msg("等级不能为空");
+            return false;
+        }
+
+        if (!percent) {
+            layer.msg("百分比不能为空");
+            return false;
+        }
+        if(id){formData.append("id", id);}
+        formData.append("level", level);
+        formData.append("percent", percent);
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: "{:url('member_bonus/save')}",
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function (result) {
+                if (result.code == 200) {
+                    layer.msg('保存成功', {icon: 1});
+                } else {
+                    layer.msg(result.msg, {icon: 2});
+                }
+            },
+            error: function (result) {
+
+            }
+        });
+
+    });
+</script>
+{/block}

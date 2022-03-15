@@ -1,0 +1,158 @@
+{extend name="common" /}
+<!-- 菜单开始 -->
+{block name="menu"}
+{include file="left" /}
+{/block}
+{block name="content"}
+<div class="box box-widget">
+    <div class="box-header with-border">
+        <span id="breadcrumb" style="color: #999; font-size: 13px;">会员管理/{if isset($vip)}编辑{else/}添加{/if}设置</span>
+        <div class="box-tools pull-right">
+            <button id="record-list" type="button" class="btn btn-box-tool">
+                <a href="{:url('member/index')}"><i class="fa fa-mail-reply text-blue"> 返回列表</i></a>
+            </button>
+        </div>
+    </div>
+    <div class="box-body">
+        <form class="form-horizontal m-t" id="signupForm" action="" method="post"
+              enctype="multipart/form-data">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">会员等级：</label>
+                <div class="col-sm-4">
+                    <input name="level" class="form-control" type="text" id="level" placeholder="填写整数(如:vip1填写1)"
+                           value="{$vip.level|default=''}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">金额：</label>
+                <div class="col-sm-4">
+                    <input name="amount" class="form-control" type="text" id="amount"
+                           value="{$vip.amount|default=''}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">话费额度：</label>
+                <div class="col-sm-4">
+                    <input name="lines" class="form-control" type="text" id="lines"
+                           value="{$vip.lines|default=''}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">对碰奖励金额：</label>
+                <div class="col-sm-4">
+                    <input name="bonus" class="form-control" type="text" id="bonus"
+                           value="{$vip.bonus|default=''}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">话费折扣：</label>
+                <div class="col-sm-4">
+                    <input name="discount" class="form-control" type="text" id="discount" placeholder="填写整数(如:80)"
+                           value="{$vip.discount|default=''}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">单日收益上限：</label>
+                <div class="col-sm-4">
+                    <input name="income" class="form-control" type="text" id="income"
+                           value="{$vip.income|default=''}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">单日充值上限：</label>
+                <div class="col-sm-4">
+                    <input name="recharge" class="form-control" type="text" id="recharge" placeholder="填写整数,无上限可不填"
+                           value="{$vip.recharge|default=''}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">盈利封顶：</label>
+                <div class="col-sm-4">
+                    <input name="profit" class="form-control" type="text" id="profit"
+                           value="{$vip.profit|default=''}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">最低复冲金额：</label>
+                <div class="col-sm-4">
+                    <input name="reflush" class="form-control" type="text" id="reflush" placeholder="填写整数,无上限可不填"
+                           value="{$vip.reflush|default=''}">
+                </div>
+            </div>
+<!--            <div class="form-group">-->
+<!--                <label class="col-sm-3 control-label">内容：</label>-->
+<!--                <div class="col-sm-6">-->
+<!--                    <div><textarea name="content" id="edit-content">{$vip.content|default=''}</textarea></div>-->
+<!--                </div>-->
+<!--            </div>-->
+            <input type="hidden" name="id" id="id" value="{$vip.id|default=''}" />
+            <div class="form-group">
+                <div class="col-sm-6 col-sm-offset-3">
+<!--                    <button class="btn btn-primary submit" type="submit">提交</button>-->
+                    <button class="btn btn-primary submit" id="save">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+
+{block name="js"}
+<script src="/static/kindeditor/kindeditor-all-min.js"></script>
+<script src="/static/kindeditor/lang/zh-CN.js"></script>
+<script type="text/javascript">
+    $('#save').on('click', function (e) {
+        e.preventDefault();
+        var formData = new FormData();
+        var id = $('#id').val();
+        var level = $('#level').val();
+        var amount = $('#amount').val();
+        var lines = $('#lines').val();
+        var bonus = $('#bonus').val();
+        var income = $('#income').val();
+        var discount = $('#discount').val();
+        var recharge = $('#recharge').val();
+        var profit = $('#profit').val();
+        var reflush = $('#reflush').val();
+        if (!level) {
+            layer.msg("等级不能为空");
+            return false;
+        }
+
+        if (!amount) {
+            layer.msg("金额不能为空");
+            return false;
+        }
+        if(id){formData.append("id", id);}
+        formData.append("level", level);
+        formData.append("amount", amount);
+        formData.append("bonus", bonus);
+        formData.append("lines", lines);
+        formData.append("income", income);
+        formData.append("discount", discount);
+        formData.append("recharge", recharge);
+        formData.append("profit", profit);
+        formData.append("reflush", reflush);
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: "{:url('member/save')}",
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function (result) {
+                if (result.code == 200) {
+                    layer.msg('保存成功', {icon: 1});
+                } else {
+                    layer.msg('保存失败', {icon: 2});
+                }
+            },
+            error: function (result) {
+
+            }
+        });
+
+    });
+</script>
+{/block}

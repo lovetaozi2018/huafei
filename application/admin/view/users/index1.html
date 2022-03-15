@@ -1,0 +1,112 @@
+{extend name="common" /}
+<!-- 菜单开始 -->
+{block name="menu"}
+{include file="left" /}
+{/block}
+{block name="content"}
+
+    <div class="col-md-12 box box-solid">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-newspaper-o"></i> 新闻管理</h3>
+        </div>
+
+        <div class="navbar navbar-default">
+            <form action="" id="search-form2" class="navbar-form form-inline" method="get" onsubmit="return false">
+                <label class="control-label">标题|作者</label>
+                <input type="text" name="keyword" value="" placeholder="请输入关键词" class="form-control">
+                <label class="control-label">&nbsp;性别</label>
+                <select class="form-control" name="type_id">
+                    <option value="">全部</option>
+                    <option  value="1">男</option>
+                    <option  value="2">女</option>
+                </select>
+                <button type="submit" onclick="javascript:document.getElementById('search-form2').submit();"
+                        id="button-filter search-order" class="btn btn-primary"><i class="fa fa-search"></i>
+                    筛选
+                </button>
+                <div class="pull-right">
+                    <a href="{:url('news/add')}" class="btn btn-primary edit_btn"><i class="fa fa-plus"></i>添加</a>
+                </div>
+            </form>
+        </div>
+        <div class="box-body table-responsive no-padding">
+            <table class="table table-bordered table-hover">
+                <thead>
+                <tr>
+                    <th>id</th>
+                    <th>手机号码</th>
+                    <th>真实姓名</th>
+
+                    <th>上级</th>
+                    <th>余额</th>
+                    <th>奖金</th>
+                    <th>用户状态</th>
+                    <th>实名状态</th>
+                    <th>时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name="users" id="v"}
+                <tr>
+                    <td>{$v.id}</td>
+                    <td>{$v.phone}</td>
+                    <td>{$v.real_name}</td>
+
+                    <td>{$v.father_id}</td>
+                    <td>{$v.money}</td>
+                    <td>{$v.bonus}</td>
+                    <td> {if $v.status == 0}正常
+                        {else if $v.status==1 /}禁止登录
+                        {/if}
+                    </td>
+                    <td>
+                        {if $v.rstatus == 0}未实名
+                        {else if $v.rstatus==1 /}已实名
+                        {/if}
+                    </td>
+                    <td>{$v.created_at}</td>
+                    <td>
+                        <a href="{:url('news/edit',['id'=> $v.id])}"
+                           class="btn btn-success btn-icon btn-circle btn-xs"><i class="fa fa-edit"></i></a>
+                        <a data-id="{$v.id}" href="javascript:void(0)" class="btn btn-danger btn-icon btn-circle btn-xs delete" ><i class="fa fa-trash"></i></a>
+                    </td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            &nbsp;{$users|raw}
+        </div>
+    </div>
+
+{/block}
+{block name="js"}
+<script>
+    $('.btn-confirm').on('click', function () {
+        var id = $(this).eq(0).attr('data-id');
+        var url = window.location.href;
+        layer.confirm('确认删除该数据吗 ?', {
+            btn: ['确认', '取消'] //按钮
+        }, function () {
+            $.post('{:url("news/delete")}', {id: id},
+                function (data) {
+                    if (data.code == 200) {
+                        layer.msg('删除成功', {icon: 1});
+                        setTimeout(function () {
+                            window.location.href = url;
+                        }, 2000);
+                    } else {
+                        layer.msg('删除失败', {icon: 2});
+                    }
+                })
+
+        });
+    });
+
+</script>
+{/block}
+
+
+
