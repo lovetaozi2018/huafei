@@ -2,8 +2,10 @@
 
 namespace app\api\controller;
 
+use app\common\model\MemberSet;
 use app\common\model\Recharge;
 use app\common\model\User;
+use app\common\model\UserBonus;
 use think\App;
 use think\Db;
 
@@ -123,7 +125,6 @@ class Users extends Base
     /**
      * 话费订单列表
      *
-     * @return \think\response\Json
      */
     public function lists()
     {
@@ -193,13 +194,31 @@ class Users extends Base
         return json(['code' => 200,'data' => $members]);
     }
 
+    /**
+     * 奖金记录
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function bonus()
+    {
+        $userId = $this->user['id'];
+        $bonus = new UserBonus();
+        $lists = $bonus->bonus($userId);
+
+        return json(['code' => 200,'data' => $lists]);
+    }
+
+
 
     public function test()
     {
-        $model = new User();
-        $ids = $model->getChildren(1);
-        array_push($ids,1);
-        tlogs(Db::name('user')->where('id','in',$ids)->sum('bonus'));
+        $amount = input('amount');
+       $model = new MemberSet();
+       $memberId = $model->getMemberId($amount);
+       tlogs($memberId);
+
     }
 
 

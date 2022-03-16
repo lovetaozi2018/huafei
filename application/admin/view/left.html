@@ -48,9 +48,9 @@
             </span>
         </a>
         <ul class="treeview-menu">
-            <li><a href="{:url('user/index')}"><i class="fa fa-cny"></i>充值列表</a></li>
+            <li><a href="{:url('orders/index',['type_id' => 1])}"><i class="fa fa-cny"></i>充值订单</a></li>
             <li><a href="{:url('user/index')}"><i class="fa fa-bookmark"></i>话费订单</a></li>
-            <li><a href="pages/UI/icons.html"><i class="fa fa-money"></i>提现订单</a></li>
+            <li><a href="{:url('orders/index',['type_id' => 2])}"><i class="fa fa-money"></i>提现订单</a></li>
         </ul>
     </li>
     <li class="treeview">

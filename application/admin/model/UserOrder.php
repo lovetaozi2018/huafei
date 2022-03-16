@@ -6,28 +6,38 @@ use app\common\model\UserBonus;
 use app\common\model\MemberSet;
 use think\Model;
 
-class User extends Model
+class UserOrder extends Model
 {
-    protected $table='hf_user';
+    protected $table='hf_user_order';
+
+    public function user()
+    {
+        return $this->belongsTo('User','user_id','id');
+    }
 
     /**
-     * 用户会员充值
+     * 手动充值
      *
-     * @param $data
+     * @param $orderId
      * @return bool
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
-     * @throws \Exception
      */
-    public function addRecharge($data)
+    public function addRecharge($orderId)
     {
         $this->startTrans();
-        $user = User::where('id',$data['user_id'])->find();
-        $user->money = $data['amount'] + $user['money'];
+        $order = $this->where('id',$orderId)->find();
+        $order->status = 1;
+        if(!$order->save()){
+            $this->error = '订单状态修改失败';
+            return false;
+        }
+        $user = User::where('id',$order['user_id'])->find();
+        $user->money = $order['amount'] + $user['money'];
         $setModel = new MemberSet();
         // 获取充值金额能达到的会员等级
-        $getMemberId = $setModel->getMemberId($data['amount']);
+        $getMemberId = $setModel->getMemberId($order['amount']);
         if($getMemberId){
             $getMember = MemberSet::where('id',$getMemberId)->find();
             $memberId = $user['member_id'];
@@ -36,15 +46,18 @@ class User extends Model
                 $user->member_id = $getMemberId;
             }
         }
+
         $res = $user->save();
         if(!$res){
             $this->error = '充值失败';
+            $this->rollback();
             return false;
         }
         // 如果会员等级提升,则发生对碰
         if($getMemberId && ($getMember['level'] > $member['level'])){
             $model = new UserBonus();
-            $userBonus = $model->settleBonus($data['id']);
+            $userModel = new User();
+            $userBonus = $model->settleBonus($order['user_id']);
             $rows = [];
             if(sizeof($userBonus) != 0){
                 $res = $model->allowField(true)->insertAll($userBonus);
@@ -61,7 +74,7 @@ class User extends Model
                     ];
                 }
 
-                $re = $this->saveAll($rows);
+                $re = $userModel->saveAll($rows);
                 if(!$re){
                     $this->error = '用户奖金结算失败';
                     $this->rollback();
@@ -74,10 +87,6 @@ class User extends Model
         return true;
     }
 
-    public function orders()
-    {
-        return $this->hasMany('UserOrder','user_id','id');
-    }
 
 
 }

@@ -1,0 +1,120 @@
+{extend name="common" /}
+<!-- 菜单开始 -->
+{block name="menu"}
+{include file="left" /}
+{/block}
+{block name="content"}
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="navbar navbar-default">
+                <form action="" id="search-form2" class="navbar-form form-inline" method="get" onsubmit="return false">
+                    <span class="control-label">&nbsp{if $type == 1}<i class="fa fa-cny"></i> 充值列表{else/}<i class="fa fa-money"></i> 提现列表{/if}</span>
+                </form>
+            </div>
+
+            <!-- /.box-header -->
+            <div class="box-body">
+                <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>用户</th>
+                        <th>编号</th>
+                        <th>类型</th>
+                        <th>金额</th>
+                        <th>状态</th>
+                        <th>时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {volist name="orders" id="v"}
+                    <tr>
+                        <td>{$v.id}</td>
+                        <td>{$v.real_name}</td>
+                        <td>{$v.order_no}</td>
+                        <td>
+                            {if $v.type == 1}充值
+                            {else/}提现{/if}
+                        </td>
+                        <td><i class="fa fa-cny"></i>{$v.amount}</td>
+                        <td>
+                            {if $v.status == 0}<span style="color:green">待处理</span>
+                            {elseif $v.status == 1 /}<span style="color:blue">成功</span>
+                            {else/}<span style="color:red">失败</span>{/if}
+                        </td>
+                        <td>{$v.ctime}</td>
+
+                        <td>
+                            {if $v.type == 1 && $v.status == 0}
+                            <a data-id="{$v.id}" class="btn btn-sm btn-info edit_btn btn-xs add"><i class="fa fa-plus"></i>充值</a>
+                            {/if}
+                            <a data-id="{$v.id}" href="javascript:void(0)" class="btn btn-danger btn-icon btn-circle btn-xs delete" ><i class="fa fa-trash"></i></a>
+                        </td>
+                    </tr>
+                    {/volist}
+                    </tbody>
+
+                </table>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+    </div>
+    <!-- /.col -->
+    <!-- /.row -->
+</section>
+{/block}
+{block name="js"}
+<script>
+    $('.add').on('click', function (e) {
+        e.preventDefault();
+        var id = $(this).eq(0).attr('data-id');
+        var formData = new FormData();
+        formData.append("id",id);
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: "{:url('orders/recharge')}",
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function (result) {
+                if (result.code == 200) {
+                    layer.msg('充值成功', {icon: 1});
+                } else {
+                    layer.msg(result.msg, {icon: 2});
+                }
+            },
+            error: function (result) {
+
+            }
+        });
+
+    });
+
+    $('.delete').on('click', function () {
+        var id = $(this).eq(0).attr('data-id');
+        var url = window.location.href;
+        layer.confirm('确认删除该数据吗 ?', {
+            btn: ['确认', '取消'] //按钮
+        }, function () {
+            $.post('{:url("orders/delete")}', {id: id},
+                function (data) {
+                    if (data.code == 200) {
+                        layer.msg('删除成功', {icon: 1});
+                        setTimeout(function () {
+                            window.location.href = url;
+                        }, 2000);
+                    } else {
+                        layer.msg('删除失败', {icon: 2});
+                    }
+                })
+
+        });
+    });
+
+</script>
+{/block}

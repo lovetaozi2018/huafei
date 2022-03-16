@@ -95,4 +95,32 @@ class UserBonus extends Model
             $arr[$insertIndex + 1] = $insertVal;
         }
     }
+
+    /**
+     * 奖金记录
+     *
+     * @param $userId
+     * @return array|false|mixed|string|\think\Collection|\think\db\Query[]|Model[]
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function bonus($userId)
+    {
+        $lists = [];
+        $page = input('page') ? input('page') : 1;
+        $pageSize = input('page_size') ? input('page_size') : 5;
+        $model = new User();
+        $ids = $model->getChildren($userId);
+        array_push($ids,$userId);
+
+        $limit = ($page - 1) * $pageSize;
+        $lists = $this->where('user_id',$userId)
+            ->order('id desc')
+            ->limit($limit,$pageSize)
+            ->select();
+
+        return $lists;
+
+    }
 }
