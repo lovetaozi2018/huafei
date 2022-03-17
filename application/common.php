@@ -46,6 +46,18 @@ function outputError($message = '操作失败', $code = -1)
     return json($r);
 }
 
+function getChildren($uid,$childIds = [])
+{
+    global $childIds;
+    $childrens = \think\Db::name('user')->where(['father_id' => $uid])->select();
+    if ($childrens) {
+        foreach ($childrens as $d) {
+            $childIds[] = $d['id'];
+            getChildren($d['id'],$childIds);
+        }
+    }
+    return $childIds;
+}
 
 /**
  * 输出错误

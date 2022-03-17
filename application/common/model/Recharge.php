@@ -8,6 +8,11 @@ class Recharge extends Model
 {
     protected $table = 'hf_mobile_recharge';
 
+    public function user()
+    {
+        return $this->belongsTo('User','user_id','id');
+    }
+
     /**
      * 话费充值
      *

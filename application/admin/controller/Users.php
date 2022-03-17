@@ -67,6 +67,19 @@ class Users extends Base
         return $res ? json(['code' => 200]) : json(['code' => 201]);
     }
 
+    public function members()
+    {
+        $userId = $this->request->param('id');
+        $model = new User();
+        $data = $model->members($userId);
+
+        $this->assign('members', $data['members']);
+        $this->assign('childTotal', $data['total_child']);
+        $this->assign('totalBonus', $data['total_bonus']);
+        $this->assign('totalMoney', $data['total_money']);
+        return $this->fetch();
+    }
+
     public function code()
     {
         $users = Db::name('user')

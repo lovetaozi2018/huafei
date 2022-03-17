@@ -10,7 +10,7 @@
         <div class="col-xs-12">
             <div class="navbar navbar-default">
                 <form action="" id="search-form2" class="navbar-form form-inline" method="get" onsubmit="return false">
-                    <span class="control-label">&nbsp{if $type == 1}<i class="fa fa-cny"></i> 充值列表{else/}<i class="fa fa-money"></i> 提现列表{/if}</span>
+                    <span class="control-label"><i class="fa fa-bookmark"></i>&nbsp;话费订单</span>
                 </form>
             </div>
 
@@ -21,9 +21,10 @@
                     <tr>
                         <th>id</th>
                         <th>用户</th>
-                        <th>编号</th>
-                        <th>类型</th>
-                        <th>金额</th>
+                        <th>手机</th>
+                        <th>单号</th>
+                        <th>充值金额</th>
+                        <th>付款金额</th>
                         <th>状态</th>
                         <th>时间</th>
                         <th>操作</th>
@@ -34,22 +35,19 @@
                     <tr>
                         <td>{$v.id}</td>
                         <td>{$v.real_name}</td>
+                        <td>{$v.phone}</td>
                         <td>{$v.order_no}</td>
+                        <td>{$v.price}</td>
+                        <td>{$v.real_price}</td>
                         <td>
-                            {if $v.type == 1}充值
-                            {else/}提现{/if}
-                        </td>
-                        <td><i class="fa fa-cny"></i>{$v.amount}</td>
-                        <td>
-                            {if $v.status == 0} <a class="btn btn-sm btn-info btn-xs ">待处理</a>
-                            {elseif $v.status == 1 /}<a class="btn btn-sm btn-success btn-xs ">成功</a>
+                            {if $v.status == 0} <a class="btn btn-sm btn-info btn-xs ">待充值</a>
+                            {elseif $v.status == 1 /}<a class="btn btn-sm btn-success btn-xs ">充值成功</a>
                             {else/}<a class="btn btn-sm btn-danger btn-xs ">充值失败</a>{/if}
                         </td>
-                        <td>{$v.ctime}</td>
-
+                        <td>{$v.created_at}</td>
                         <td>
-                            {if $v.type == 1 && $v.status == 0}
-                            <a data-id="{$v.id}" class="btn btn-sm btn-info edit_btn btn-xs add"><i class="fa fa-plus"></i>充值</a>
+                            {if $v.status == 0}
+                            <a data-id="{$v.id}" class="btn btn-sm btn-info edit_btn btn-xs edit"><i class="fa fa-plus"></i>充值</a>
                             {/if}
                             <a data-id="{$v.id}" href="javascript:void(0)" class="btn btn-danger btn-icon btn-circle btn-xs delete" ><i class="fa fa-trash"></i></a>
                         </td>

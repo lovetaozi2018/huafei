@@ -213,8 +213,7 @@ class Users extends Base
 
 
     public function test()
-    {
-        $amount = input('amount');
+    {$amount = input('amount');
        $model = new MemberSet();
        $memberId = $model->getMemberId($amount);
        tlogs($memberId);

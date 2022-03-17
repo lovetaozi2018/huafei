@@ -10,9 +10,13 @@
         <div class="col-xs-12">
             <div class="navbar navbar-default">
                 <form action="" id="search-form2" class="navbar-form form-inline" method="get" onsubmit="return false">
-                    <span class="control-label"><i class="fa fa-street-view"></i>&nbsp;用户管理</span>
+                    <span class="control-label"><i class="fa fa-street-view"></i>&nbsp;
+                        会员统计&nbsp;&nbsp;
+                    </span>
                     <div class="pull-right">
-
+                        会员总数: <span style="color: red">{$childTotal}</span> &nbsp;&nbsp;
+                        余额总计: <span style="color: red">￥{$totalMoney} </span>&nbsp;&nbsp;
+                        奖金总计: <span style="color: red">￥{$totalBonus}</span>&nbsp;&nbsp;
 <!--                        <a href="{:url('news/add')}" class="btn btn-sm btn-info edit_btn"><i class="fa fa-plus"></i>添加</a>-->
                     </div>
                 </form>
@@ -25,56 +29,41 @@
                     <tr>
                         <th>id</th>
                         <th>手机号码</th>
-                        <th>昵称</th>
                         <th>真实姓名</th>
                         <th>会员等级</th>
                         <th>上级</th>
-                        <th>余额</th>
-                        <th>奖金</th>
-                        <th>性别</th>
-                        <th>用户状态</th>
-                        <th>实名状态</th>
-                        <th>最后登录</th>
-                        <th>注册时间</th>
-                        <th>操作</th>
+                        <th>子级个数</th>
+                        <th>充值统计</th>
+                        <th>个人余额</th>
+                        <th>团队余额</th>
+                        <th>团队对碰奖金</th>
+                        <th>团队剩余奖金</th>
+                        <th>提现统计</th>
+                        <th>话费统计</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {volist name="users" id="v"}
+                    {volist name="members" id="v"}
                     <tr>
                         <td>{$v.id}</td>
                         <td>{$v.phone}</td>
-                        <td>{$v.username}</td>
                         <td>{$v.real_name}</td>
                         <td>
-                            {if $v.member_id == 0}普通用户
-                            {else /}VIP{$v.member_id}
+                            {if $v.member_id == 0}<a class="btn btn-sm btn-primary btn-xs">普通用户</a>
+                            {else /}<a class="btn btn-sm btn-info btn-xs">Vip{$v.member_id}</a>
                             {/if}
                         </td>
-                        <td>{$v.father_id}</td>
+                        <td>{$v.father}</td>
+                        <td>{$v.child_total}</td>
+                        <td>
+                            {$v.money_total}
+                        </td>
                         <td>{$v.money}</td>
-                        <td>{$v.bonus}</td>
-                        <td>{if $v.sex == 1}男
-                            {else if $v.status==2 /}女
-                            {/if}</td>
-                        <td> {if $v.status == 0}正常
-                            {else if $v.status==1 /}禁止登录
-                            {/if}
-                        </td>
-                        <td>
-                            {if $v.rstatus == 0}<a class="btn btn-sm btn-danger btn-xs">未实名</a>
-                            {else if $v.rstatus==1 /}<a class="btn btn-sm btn-success btn-xs">已实名</a>
-                            {/if}
-                        </td>
-                        <td>{$v.last_login_time}</td>
-                        <td>{$v.created_at}</td>
-                        <td>
-                            <a href="{:url('users/members',['id'=> $v.id])}" class="btn btn-sm btn-primary btn-xs">我的团队</a>
-                            <a data-id="{$v.id}" class="btn btn-sm btn-info  btn-xs add">充值</a>
-<!--                            <a href="{:url('news/edit',['id'=> $v.id])}"-->
-<!--                               class="btn btn-success btn-icon btn-circle btn-xs"><i class="fa fa-edit"></i></a>-->
-                            <a data-id="{$v.id}" href="javascript:void(0)" class="btn btn-danger btn-icon btn-circle btn-xs delete"><i class="fa fa-trash"></i></a>
-                        </td>
+                        <td>{$v.last_money_total}</td>
+                        <td>{$v.bonus_total}</td>
+                        <td>{$v.last_bonus_total}</td>
+                        <td>{$v.tixian_total}</td>
+                        <td>{$v.recharge_total}</td>
                     </tr>
                     {/volist}
                     </tbody>
