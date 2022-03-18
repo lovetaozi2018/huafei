@@ -48,5 +48,19 @@ class Orders extends Base
             json(['code' => 201,'msg' => $model->getError()]);
     }
 
+    /**
+     * 删除
+     *
+     * @return \think\response\Json
+     * @throws \think\Exception
+     * @throws \think\exception\PDOException
+     */
+    public function delete()
+    {
+        $id = $this->request->param('id');
+        $res = Db::name('user_order')->where('id',$id)->delete();
+        return $res ? json(['code' => 200]) : json(['code' => 201]);
+    }
+
 
 }

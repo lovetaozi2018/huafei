@@ -33,8 +33,6 @@ class Admins extends Base
 
     public function edit()
     {
-        tlogs($this->user);
-
         return $this->fetch();
     }
 

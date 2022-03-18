@@ -40,7 +40,7 @@ class Login extends Controller
         $re = send_sms($phone, $str);
         if ($re) {
             Cache::set('register_' . $phone, $code, 1800);
-            return json(['code' => 200, 'msg' => '验证码发送成功']);
+            return json(['code' => 200, 'msg' => '验证码发送成功','sms_code' => $code]);
         } else {
             return json(['code' => 202, 'msg' => '验证码发送失败']);
         }
@@ -85,21 +85,8 @@ class Login extends Controller
         }
         $data = input();
         $model = new User();
-        $user = $model->where('phone', $data['username'])->find();
-        if (!$user) {
-            return json(['code' => 201, 'msg' => '用户名不正确']);
-        }
-        if (md5_pass($data['password']) != $user['password']) {
-            return json(['code' => 201, 'msg' => '密码错误']);
-        }
-        if($user['status'] == 0){
-            return json(['code' => 201, 'msg' => '用户已禁止登录']);
-        }
-        $token = $model->createToken($user,24*60*60*7);
-        $user->token = $token;
-        $res = $user->save();
-        return $res ? json(['code' => 200, 'user' => $user, 'token' => $token]) :
-            json(['code' => 202, 'msg' => '登录失败']);
+        $res = $model->login($data);
+        return json($res);
 
     }
 

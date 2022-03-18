@@ -49,7 +49,10 @@
 
                         <td>
                             {if $v.type == 1 && $v.status == 0}
-                            <a data-id="{$v.id}" class="btn btn-sm btn-info edit_btn btn-xs add"><i class="fa fa-plus"></i>充值</a>
+                            <a data-id="{$v.id}" class="btn btn-sm btn-info edit_btn btn-xs add">充值</a>
+                            {/if}
+                            {if $v.type == 2 && $v.status == 0}
+                            <a data-id="{$v.id}" class="btn btn-sm btn-info edit_btn btn-xs withdraw">提现</a>
                             {/if}
                             <a data-id="{$v.id}" href="javascript:void(0)" class="btn btn-danger btn-icon btn-circle btn-xs delete" ><i class="fa fa-trash"></i></a>
                         </td>
@@ -69,30 +72,41 @@
 {/block}
 {block name="js"}
 <script>
-    $('.add').on('click', function (e) {
-        e.preventDefault();
+
+    $('.add').on('click', function () {
         var id = $(this).eq(0).attr('data-id');
-        var formData = new FormData();
-        formData.append("id",id);
-        $.ajax({
-            type: 'POST',
-            dataType: 'json',
-            url: "{:url('orders/recharge')}",
-            processData: false,
-            contentType: false,
-            data: formData,
-            success: function (result) {
-                if (result.code == 200) {
-                    layer.msg('充值成功', {icon: 1});
-                } else {
-                    layer.msg(result.msg, {icon: 2});
-                }
-            },
-            error: function (result) {
+        var url = window.location.href;
+        layer.confirm('确认充值该订单吗 ?', {
+            btn: ['确认', '取消'] //按钮
+        }, function () {
+            $.post("{:url('orders/recharge')}", {id: id},
+                function (data) {
+                    if (result.code == 200) {
+                        layer.msg('充值成功', {icon: 1});
+                    } else {
+                        layer.msg(result.msg, {icon: 2});
+                    }
+                })
 
-            }
         });
+    });
 
+    $('.withdraw').on('click', function () {
+        var id = $(this).eq(0).attr('data-id');
+        var url = window.location.href;
+        layer.confirm('确认提现该订单吗 ?', {
+            btn: ['确认', '取消'] //按钮
+        }, function () {
+            $.post("{:url('orders/recharge')}", {id: id},
+                function (data) {
+                    if (result.code == 200) {
+                        layer.msg('充值成功', {icon: 1});
+                    } else {
+                        layer.msg(result.msg, {icon: 2});
+                    }
+                })
+
+        });
     });
 
     $('.delete').on('click', function () {

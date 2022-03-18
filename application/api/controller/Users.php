@@ -22,8 +22,8 @@ class Users extends Base
 
     public function info()
     {
-        $user = $this->user;
         $model = new User();
+        $user = $model->where('id',$this->user['id'])->find();
         $childIds = $model->getChildren($user['id']);
         $user['child_count'] = count($childIds);
 

@@ -75,7 +75,7 @@ class MemberBonus extends Base
     public function delete()
     {
         $id = $this->request->param('id');
-        $res = Db::name('news')->where('id',$id)->delete();
+        $res = Db::name('member_bonus_percent')->where('id',$id)->delete();
         return $res ? json(['code' => 200]) : json(['code' => 201]);
     }
 }

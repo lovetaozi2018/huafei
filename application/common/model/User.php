@@ -115,6 +115,36 @@ class User extends Model
         return true;
     }
 
+
+    /**
+     * 登录
+     *
+     * @param $post
+     * @return array|\think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function login($post)
+    {
+        $user = $this->where('phone', $post['phone'])->find();
+        if (!$user) {
+            return json(['code' => 201, 'msg' => '手机号码不正确']);
+        }
+        if (md5_pass($post['password']) != $user['password']) {
+            return json(['code' => 201, 'msg' => '密码错误']);
+        }
+        if($user['status'] == 0){
+            return json(['code' => 201, 'msg' => '用户已禁止登录']);
+        }
+        $token = $this->createToken($user,24*60*60*7);
+        $user->last_login_time = date('Y-m-d H:i:s',time());
+        $user->reg_ip = get_ip();
+        $user->token = $token;
+        $res = $user->save();
+        return $res ? ['code' => 200, 'user' => $user] : ['code' => 202, 'msg' => '登录失败'];
+    }
+
     /**
      * 重置密码
      *
@@ -148,7 +178,7 @@ class User extends Model
      */
     public function uploadImg($file)
     {
-        $apiPath = env('root_path') . 'public';
+        $apiPath =str_replace('\\','/',env('root_path'))  . 'public';
         $filePath = '/uploads/images';
         // 去除空格
         $name = str_replace(' ', '', $file['name']);
@@ -156,7 +186,6 @@ class User extends Model
         $name = preg_replace('/[\x{10000}-\x{10FFFF}]/u', '', $name);
         $original = $file['tmp_name'];
         $ext = explode('.', $name);//后缀
-        $filePath = $filePath . '/' . date('Ymd');
         $ext = strtolower(array_pop($ext)); // 后缀转化成小写
         if (!file_exists($filePath)) {
             $res = mkdir($filePath, 0777, true);
@@ -187,9 +216,9 @@ class User extends Model
         $user = $this->where('id', $data['user_id'])->find();
         $file = $_FILES;
         // 头像
-        if (isset($file['img']) && !empty($file['img'])) {
-            $res = $this->uploadImg($file['img']);
-            if (!$res['code'] != 200) {
+        if (isset($file['head_img']) && !empty($file['head_img'])) {
+            $res = $this->uploadImg($file['head_img']);
+            if ($res['code'] != 200) {
                 $this->error = $res['msg'];
                 return false;
             }
