@@ -67,6 +67,50 @@ class Users extends Base
         return $res ? json(['code' => 200]) : json(['code' => 201]);
     }
 
+    public function edit($id)
+    {
+        $user = Db::name('user')->where('id',$id)->find();
+
+        $this->assign('user', $user);
+        return $this->fetch();
+    }
+
+    /**
+     * 重置用户密码
+     *
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function reset()
+    {
+        $id = input('id');
+        $model = new User();
+        $user = $model->where('id',$id)->find();
+        $user->password = md5_pass('123456');
+        $res = $user->save();
+        return $res ? json(['code' => 200]) : json(['code' => 201]);
+    }
+
+    /**
+     * 禁用用户
+     *
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function forbidden()
+    {
+        $id = input('id');
+        $model = new User();
+        $user = $model->where('id',$id)->find();
+        $user->status = 0;
+        $res = $user->save();
+        return $res ? json(['code' => 200]) : json(['code' => 201]);
+    }
+
     public function members()
     {
         $userId = $this->request->param('id');

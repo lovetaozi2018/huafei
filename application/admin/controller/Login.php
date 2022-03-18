@@ -26,7 +26,7 @@ class Login extends Controller
         if(!$res){
             return json(['code'=> 201,'msg' => $model->getError()]);
         }
-        session('user', $res);
+
         return json(['code' => 200, 'msg' => '登录成功', 'url' => url('/')]);
     }
 

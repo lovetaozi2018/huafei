@@ -20,7 +20,6 @@ class Orders extends Base
     {
         $typeId = $this->request->param('type_id');
         $model = new UserOrder();
-        $order = $model->where('id',2)->find();
         $orders =$model->where('type',$typeId)
             ->select();
         foreach ($orders as $k=>$u){

@@ -34,6 +34,7 @@
                         <th>性别</th>
                         <th>用户状态</th>
                         <th>实名状态</th>
+                        <th>注册ip</th>
                         <th>最后登录</th>
                         <th>注册时间</th>
                         <th>操作</th>
@@ -57,8 +58,8 @@
                         <td>{if $v.sex == 1}男
                             {else if $v.status==2 /}女
                             {/if}</td>
-                        <td> {if $v.status == 0}正常
-                            {else if $v.status==1 /}禁止登录
+                        <td> {if $v.status == 1}<a class="btn btn-sm btn-success btn-xs">正常</a>
+                            {else if $v.status==0 /}<a class="btn btn-sm btn-warning btn-xs">禁止登录</a>
                             {/if}
                         </td>
                         <td>
@@ -66,13 +67,14 @@
                             {else if $v.rstatus==1 /}<a class="btn btn-sm btn-success btn-xs">已实名</a>
                             {/if}
                         </td>
+                        <td>{$v.reg_ip}</td>
                         <td>{$v.last_login_time}</td>
                         <td>{$v.created_at}</td>
                         <td>
                             <a href="{:url('users/members',['id'=> $v.id])}" class="btn btn-sm btn-primary btn-xs">我的团队</a>
-                            <a data-id="{$v.id}" class="btn btn-sm btn-info  btn-xs add">充值</a>
-<!--                            <a href="{:url('news/edit',['id'=> $v.id])}"-->
-<!--                               class="btn btn-success btn-icon btn-circle btn-xs"><i class="fa fa-edit"></i></a>-->
+                            <a data-id="{$v.id}" title="默认重置密码为123456" class="btn btn-sm btn-info  btn-xs reset">重置密码</a>
+                            <a href="{:url('users/edit',['id'=> $v.id])}" class="btn btn-success btn-icon btn-circle btn-xs">充值</a>
+                            <a data-id="{$v.id}" class="btn btn-sm btn-warning btn-xs forbidden">禁用</a>
                             <a data-id="{$v.id}" href="javascript:void(0)" class="btn btn-danger btn-icon btn-circle btn-xs delete"><i class="fa fa-trash"></i></a>
                         </td>
                     </tr>
@@ -90,6 +92,50 @@
 {/block}
 {block name="js"}
 <script>
+
+    $('.reset').on('click', function () {
+        var id = $(this).eq(0).attr('data-id');
+        var url = window.location.href;
+        layer.confirm('确认重置该用户密码吗 ?', {
+            btn: ['确认', '取消'] //按钮
+        }, function () {
+            $.post('{:url("users/reset")}', {id: id},
+                function (data) {
+                    if (data.code == 200) {
+                        layer.msg(' 重置成功', {icon: 1});
+                        setTimeout(function () {
+                            window.location.href = url;
+                        }, 2000);
+                    } else {
+                        layer.msg('重置失败', {icon: 2});
+                    }
+                })
+
+        });
+    });
+
+    // 禁用
+    $('.forbidden').on('click', function () {
+        var id = $(this).eq(0).attr('data-id');
+        var url = window.location.href;
+        layer.confirm('确认禁用该用户吗 ?', {
+            btn: ['确认', '取消'] //按钮
+        }, function () {
+            $.post('{:url("users/forbidden")}', {id: id},
+                function (data) {
+                    if (data.code == 200) {
+                        layer.msg(' 禁用成功', {icon: 1});
+                        setTimeout(function () {
+                            window.location.href = url;
+                        }, 2000);
+                    } else {
+                        layer.msg('禁用失败', {icon: 2});
+                    }
+                })
+
+        });
+    });
+
     $('.delete').on('click', function () {
         var id = $(this).eq(0).attr('data-id');
         var url = window.location.href;

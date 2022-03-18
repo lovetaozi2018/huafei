@@ -25,7 +25,7 @@ class User extends Model
     public function addRecharge($data)
     {
         $this->startTrans();
-        $user = User::where('id',$data['user_id'])->find();
+        $user = User::where('id',$data['id'])->find();
         $user->money = $data['amount'] + $user['money'];
         $setModel = new MemberSet();
         // 获取充值金额能达到的会员等级

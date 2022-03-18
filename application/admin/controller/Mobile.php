@@ -44,7 +44,11 @@ class Mobile extends Base
             $where[] = ['order_no', 'like', '%' . $param['order_no'] . '%'];
         }
         if (isset($param['status'])) {
-            $where[] = ['status', '=', $param['status']];
+            if($param['status'] == 3){
+                $where[] = ['status', 'in', [0,1,2]];
+            }else{
+                $where[] = ['status', '=', $param['status']];
+            }
         }
 
         if (isset($param['start_date']) && !empty($param['start_date'])) {
@@ -89,6 +93,16 @@ class Mobile extends Base
         $res = $model->addRecharge($orderId);
         return $res ? json(['code' => 200]) :
             json(['code' => 201,'msg' => $model->getError()]);
+    }
+
+    public function delete()
+    {
+        $id = input('id');
+        $model = new Recharge();
+        $order = $model->where('id',$id)->find();
+        $res = $order->delete();
+
+        return $res ? json(['code' => 200]) : json(['code' => 201]);
     }
 
 

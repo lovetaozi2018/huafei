@@ -1,0 +1,73 @@
+{extend name="common" /}
+<!-- 菜单开始 -->
+{block name="menu"}
+{include file="left" /}
+{/block}
+{block name="content"}
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="navbar navbar-default">
+                <form action="" id="search-form2" class="navbar-form form-inline" method="get" onsubmit="return false">
+                    <span class="control-label"><i class="fa fa-sun-o"></i>&nbsp;登录记录</span>
+                </form>
+            </div>
+
+            <!-- /.box-header -->
+            <div class="box-body">
+                <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>用户名</th>
+                        <th>ip</th>
+                        <th>时间</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {volist name="logs" id="v"}
+                    <tr>
+                        <td>{$v.id}</td>
+                        <td>{$v.username}</td>
+                        <td>{$v.ip}</td>
+                        <td>{$v.time}</td>
+                    </tr>
+                    {/volist}
+                    </tbody>
+
+                </table>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+    </div>
+    <!-- /.col -->
+    <!-- /.row -->
+</section>
+{/block}
+{block name="js"}
+<script>
+    $('.delete').on('click', function () {
+        var id = $(this).eq(0).attr('data-id');
+        var url = window.location.href;
+        layer.confirm('确认删除该数据吗 ?', {
+            btn: ['确认', '取消'] //按钮
+        }, function () {
+            $.post('{:url("news/delete")}', {id: id},
+                function (data) {
+                    if (data.code == 200) {
+                        layer.msg('删除成功', {icon: 1});
+                        setTimeout(function () {
+                            window.location.href = url;
+                        }, 2000);
+                    } else {
+                        layer.msg('删除失败', {icon: 2});
+                    }
+                })
+
+        });
+    });
+
+</script>
+{/block}

@@ -2,6 +2,7 @@
 
 namespace app\common\model;
 
+use think\Db;
 use think\Model;
 
 class Admin extends Model
@@ -10,6 +11,7 @@ class Admin extends Model
 
     public function login($data)
     {
+        $this->startTrans();
         $admin = $this->where([['username', '=', $data['username']]])->find();
         if (!$admin) {
             $this->error = '账号错误';
@@ -22,7 +24,13 @@ class Admin extends Model
             $this->error = '密码错误';
             return false;
         }
+        Db::name('admin_log')->insert([
+            'username' => $data['username'],
+            'ip' => get_ip(),
+            'time' => date('Y-m-d H:i:s',time()),
+        ]);
 
+        session('user',$admin);
         return true;
     }
 

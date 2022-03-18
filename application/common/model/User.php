@@ -77,6 +77,7 @@ class User extends Model
         $post = [
             'phone' => $data['phone'],
             'password' => md5_pass($data['password']),
+            'reg_ip' => get_ip(),
         ];
         if (isset($data['father_id']) && !empty($data['father_id'])) {
             $fatherId = $data['father_id'];

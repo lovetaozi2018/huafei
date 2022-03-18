@@ -5,7 +5,7 @@
 {/block}
 {block name="content"}
 
-    <div class="col-md-12 box box-solid">
+    <div class="col-md-12 box box-solid" style="padding-bottom: 20px;">
         <div class="panel-heading">
             <span class="control-label"><i class="fa fa-bookmark"></i>&nbsp;话费订单</span>
         </div>
@@ -20,7 +20,7 @@
                 <input type="text" name="order_no" value="" placeholder="请输入单号" class="form-control">
                 <label class="control-label">&nbsp;状态</label>
                 <select class="form-control" name="status">
-                    <option value="">全部</option>
+                    <option value="3">全部</option>
                     <option value="0">待充值</option>
                     <option value="1">充值成功</option>
                     <option value="2">充值失败</option>
@@ -40,7 +40,7 @@
             </form>
         </div>
         <div class="box-body table-responsive no-padding">
-            <table class="table table-bordered table-hover">
+            <table class="table table-bordered table-striped">
                 <thead>
                 <tr>
                     <th>id</th>
@@ -54,6 +54,8 @@
                     <th>操作</th>
                 </tr>
                 </thead>
+
+                {if sizeof($orders)!=0}
                 <tbody>
                 {volist name="orders" id="v"}
                 <tr>
@@ -78,6 +80,12 @@
                 </tr>
                 {/volist}
                 </tbody>
+                {else/}
+                <tbody>
+                <tr><td colspan="8" style="text-align: center">对不起,暂时没有记录</td></tr>
+                </tbody>
+                {/if}
+
 
             </table>
         </div>
@@ -101,13 +109,13 @@
         format: 'yyyy-mm-dd',
         language: 'zh-CN',
     })
-    $('.btn-confirm').on('click', function () {
+    $('.delete').on('click', function () {
         var id = $(this).eq(0).attr('data-id');
         var url = window.location.href;
-        layer.confirm('确认删除该数据吗 ?', {
+        layer.confirm('确认删除该订单吗 ?', {
             btn: ['确认', '取消'] //按钮
         }, function () {
-            $.post('{:url("news/delete")}', {id: id},
+            $.post('{:url("mobile/delete")}', {id: id},
                 function (data) {
                     if (data.code == 200) {
                         layer.msg('删除成功', {icon: 1});

@@ -1,0 +1,96 @@
+{extend name="common" /}
+<!-- 菜单开始 -->
+{block name="menu"}
+{include file="left" /}
+{/block}
+{block name="content"}
+<div class="box box-widget">
+    <div class="box-header with-border">
+        <span id="breadcrumb" style="color: #999; font-size: 13px;">会员管理/编辑会员</span>
+        <div class="box-tools pull-right">
+            <button id="record-list" type="button" class="btn btn-box-tool">
+                <a href="{:url('member/index')}"><i class="fa fa-mail-reply text-blue"> 返回列表</i></a>
+            </button>
+        </div>
+    </div>
+    <div class="box-body">
+        <form class="form-horizontal m-t" id="signupForm" action="" method="post"
+              enctype="multipart/form-data">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">昵称：</label>
+                <div class="col-sm-4">
+                    <input name="username" class="form-control" type="text" id="username" readonly="readonly"
+                           value="{$user.username|default=''}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">手机号码：</label>
+                <div class="col-sm-4">
+                    <input name="phone" class="form-control" type="text" id="phone" readonly="readonly"
+                           value="{$user.phone|default=''}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">充值金额：</label>
+                <div class="col-sm-4">
+                    <input name="money" class="form-control" type="text" id="money">
+                </div>
+            </div>
+
+<!--            <div class="form-group">-->
+<!--                <label class="col-sm-3 control-label">内容：</label>-->
+<!--                <div class="col-sm-6">-->
+<!--                    <div><textarea name="content" id="edit-content">{$vip.content|default=''}</textarea></div>-->
+<!--                </div>-->
+<!--            </div>-->
+            <input type="hidden" name="id" id="id" value="{$user.id|default=''}" />
+            <div class="form-group">
+                <div class="col-sm-6 col-sm-offset-3">
+<!--                    <button class="btn btn-primary submit" type="submit">提交</button>-->
+                    <button class="btn btn-primary submit" id="save">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+
+{block name="js"}
+<script src="/static/kindeditor/kindeditor-all-min.js"></script>
+<script src="/static/kindeditor/lang/zh-CN.js"></script>
+<script type="text/javascript">
+    $('#save').on('click', function (e) {
+        e.preventDefault();
+        var formData = new FormData();
+        var id = $('#id').val();
+        var money = $('#money').val();
+
+        if (!money) {
+            layer.msg("充值金额不能为空");
+            return false;
+        }
+        formData.append("id", id);
+        formData.append("money", money);
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: "{:url('users/addrecharge')}",
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function (result) {
+                if (result.code == 200) {
+                    layer.msg('保存成功', {icon: 1});
+                } else {
+                    layer.msg('保存失败', {icon: 2});
+                }
+            },
+            error: function (result) {
+
+            }
+        });
+
+    });
+</script>
+{/block}

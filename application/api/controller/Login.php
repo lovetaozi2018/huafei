@@ -92,6 +92,9 @@ class Login extends Controller
         if (md5_pass($data['password']) != $user['password']) {
             return json(['code' => 201, 'msg' => '密码错误']);
         }
+        if($user['status'] == 0){
+            return json(['code' => 201, 'msg' => '用户已禁止登录']);
+        }
         $token = $model->createToken($user,24*60*60*7);
         $user->token = $token;
         $res = $user->save();

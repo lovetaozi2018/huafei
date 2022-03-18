@@ -30,7 +30,7 @@
 <body class="hold-transition login-page">
 <div class="login-box">
     <div class="login-logo">
-        <a href="#"><b>后台管理系统</b></a>
+        <a href="#"><b>话费后台管理系统</b></a>
     </div>
     <!-- /.login-logo -->
     <div class="login-box-body">
@@ -107,7 +107,7 @@
             success: function (res) {
                 if (res.code == 200) {
                     layer.msg(res.msg, {icon: 1});
-                    window.location.href ="{:url('news/index')}"
+                    window.location.href ="{:url('users/index')}"
                 } else {
                     layer.msg(res.msg, {icon: 2});
                 }
