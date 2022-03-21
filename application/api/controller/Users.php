@@ -6,6 +6,7 @@ use app\common\model\MemberSet;
 use app\common\model\Recharge;
 use app\common\model\User;
 use app\common\model\UserBonus;
+use app\common\model\UserCoupons;
 use think\App;
 use think\Db;
 
@@ -103,6 +104,22 @@ class Users extends Base
             : json(['code' => 201,'msg' => '认证失败']);
     }
 
+    /**
+     * 用户可用优惠券
+     *
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function coupons()
+    {
+        $userId = $this->user['id'];
+        $model = new UserCoupons();
+        $userCoupons = $model->getCoupons($userId);
+
+        return json(['code' => 200,'data' => $userCoupons]);
+    }
 
     /**
      * 话费充值
@@ -201,13 +218,26 @@ class Users extends Base
         return json(['code' => 200,'data' => $lists]);
     }
 
+    /**
+     * 领取优惠券
+     *
+     * @return \think\response\Json
+     */
+    public function receiveCoupons()
+    {
+        $post = input();
+        $post['user_id'] = $this->user['id'];
+        $model = new UserCoupons();
+        $res = $model->adds($post);
+        return $res ? json(['code' => 200,'msg' => '领取成功']) : json(['code' => 201,'msg' => '领取失败']);
+    }
 
 
     public function test()
-    {$amount = input('amount');
-       $model = new MemberSet();
-       $memberId = $model->getMemberId($amount);
-       tlogs($memberId);
+    {
+        $model = new User();
+        $fathers = $model->getFather(6);
+        tlogs($fathers);
 
     }
 

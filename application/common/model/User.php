@@ -174,12 +174,13 @@ class User extends Model
      * 上传头像
      *
      * @param $file
+     * @param string $filePath
      * @return array
      */
-    public function uploadImg($file)
+    public function uploadImg($file,$filePath='')
     {
         $apiPath =str_replace('\\','/',env('root_path'))  . 'public';
-        $filePath = '/uploads/images';
+        $filePath = $filePath ? $filePath : '/uploads/images';
         // 去除空格
         $name = str_replace(' ', '', $file['name']);
         //删除特殊字符
@@ -187,8 +188,8 @@ class User extends Model
         $original = $file['tmp_name'];
         $ext = explode('.', $name);//后缀
         $ext = strtolower(array_pop($ext)); // 后缀转化成小写
-        if (!file_exists($filePath)) {
-            $res = mkdir($filePath, 0777, true);
+        if (!file_exists($apiPath.$filePath)) {
+            $res = mkdir($apiPath.$filePath, 0777, true);
             if (!$res) {
                 return ['code' => '201', 'msg' => '文件夹创建失败'];
             }
@@ -299,10 +300,10 @@ class User extends Model
     {
         static $level = 0;
         $user = Db::name('user')->where(['id' => $uid])->find();
-        if ($user) {
+        if ($user && $user['father_id']) {
             $level++;
             $fatherIds[] = [
-                'father_id' => $user['id'],
+                'father_id' => $user['father_id'],
                 'level' => $level
             ];
             return $this->getFather($user['father_id'], $fatherIds);

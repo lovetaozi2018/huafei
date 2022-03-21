@@ -1,0 +1,141 @@
+{extend name="common" /}
+<!-- 菜单开始 -->
+{block name="menu"}
+{include file="left" /}
+{/block}
+{block name="content"}
+<div class="box box-widget">
+    <div class="box-header with-border">
+        <span id="breadcrumb" style="color: #999; font-size: 13px;">会员管理/{if isset($coupon)}编辑{else/}添加{/if}优惠券</span>
+        <div class="box-tools pull-right">
+            <button id="record-list" type="button" class="btn btn-box-tool">
+                <a href="{:url('coupons/index')}"><i class="fa fa-mail-reply text-blue"> 返回列表</i></a>
+            </button>
+        </div>
+    </div>
+    <div class="box-body">
+        <form class="form-horizontal m-t" id="signupForm" action="" method="post"
+              enctype="multipart/form-data">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">折扣比例：</label>
+                <div class="col-sm-4">
+                    <input name="zhekou" class="form-control" type="text" id="zhekou" placeholder="填写整数(如:9折就填9)"
+                           value="{$coupon.zhekou|default=''}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">开始日期：</label>
+                <div class="col-sm-4">
+                    <input name="start_date" class="form-control" type="text" id="start_date"
+                           value="{$coupon.start_date|default=''}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">结束日期：</label>
+                <div class="col-sm-4">
+                    <input name="end_date" class="form-control" type="text" id="end_date"
+                           value="{$coupon.end_date|default=''}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">活动简介：</label>
+                <div class="col-sm-4">
+                    <input name="content" class="form-control" type="text" id="content"
+                           value="{$coupon.content|default=''}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">活动图：</label>
+                <div class="col-sm-4">
+                    <input name="logo" class="form-control" type="file" id="logo"
+                           value="{$coupon.logo|default=''}" accept="image/gif, image/jpeg,image/png">
+                </div>
+            </div>
+
+<!--            <div class="form-group">-->
+<!--                <label class="col-sm-3 control-label">内容：</label>-->
+<!--                <div class="col-sm-6">-->
+<!--                    <div><textarea name="content" id="edit-content">{$vip.content|default=''}</textarea></div>-->
+<!--                </div>-->
+<!--            </div>-->
+            <input type="hidden" name="id" id="id" value="{$coupon.id|default=''}" />
+            <div class="form-group">
+                <div class="col-sm-6 col-sm-offset-3">
+<!--                    <button class="btn btn-primary submit" type="submit">提交</button>-->
+                    <button class="btn btn-primary submit" id="save">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+
+{block name="js"}
+<script src="/static/kindeditor/kindeditor-all-min.js"></script>
+<script src="/static/kindeditor/lang/zh-CN.js"></script>
+<script type="text/javascript">
+    $('#start_date').datepicker({
+        pickTime: true,
+        autoclose:true,
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+    });
+    $('#end_date').datepicker({
+        pickTime: true,
+        autoclose:true,
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+    });
+    $('#save').on('click', function (e) {
+        e.preventDefault();
+        var formData = new FormData();
+        var id = $('#id').val();
+        var zhekou = $('#zhekou').val();
+        var start_date = $('#start_date').val();
+        var end_date = $('#end_date').val();
+        var content = $('#content').val();
+        var logo = $('#logo')[0].files[0];
+        if (!zhekou) {
+            layer.msg("折扣不能为空",{icon: 2});
+            return false;
+        }
+        if (!start_date) {
+            layer.msg("开始日期不能为空",{icon: 2});
+            return false;
+        }
+        if (!end_date) {
+            layer.msg("结束日期不能为空",{icon: 2});
+            return false;
+        }
+
+
+        if(id){formData.append("id", id);}
+        formData.append("zhekou", zhekou);
+        formData.append("start_date", start_date);
+        formData.append("end_date", end_date);
+        formData.append("content", content);
+        formData.append("logo", logo);
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: "{:url('coupons/save')}",
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function (result) {
+                if (result.code == 200) {
+                    layer.msg('保存成功', {icon: 1});
+                } else {
+                    layer.msg(result.msg, {icon: 2});
+                }
+            },
+            error: function (result) {
+
+            }
+        });
+
+    });
+</script>
+{/block}

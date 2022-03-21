@@ -25,7 +25,7 @@ class UserBonus extends Model
         $fatherId = $user['father_id'];
         // 查询父级用户所有是会员的子级,不是会员的子级不能对碰(这里不用考虑父级的会员等级，因为父级不是会员不能推广),
         $children = Db::name('user')->where('father_id', $fatherId)
-            ->where('member_id','<>',0)
+            ->where('member_id', '<>', 0)
             ->select();
         foreach ($children as $k => $v) {
             $childIds1[] = $v['id'];
@@ -45,25 +45,23 @@ class UserBonus extends Model
             return [];
         }
         $childId = $childIds[0];
-        $child = Db::name('user')->where('id',$childId)->find();
-        $father = Db::name('user')->where('id',$fatherId)->find();
-        $memberIds = [$child['member_id'],$father['member_id'],$user['member_id']];
+        $child = Db::name('user')->where('id', $childId)->find();
+        $father = Db::name('user')->where('id', $fatherId)->find();
+        $memberIds = [$child['member_id'], $father['member_id'], $user['member_id']];
         // 比较三者的会员等级
         $this->insertSort($memberIds);
         $minMemberId = $memberIds[0];
-        foreach ($fathers as $k => $f){
+        foreach ($fathers as $k => $f) {
             $fathers[$k]['user_id'] = $f['father_id'];
             $fathers[$k]['member_id'] = $minMemberId;
             $fathers[$k]['from_user_id'] = $userId;
             $fathers[$k]['user1_id'] = $userId;
             $fathers[$k]['user2_id'] = $childId;
-            $fathers[$k]['date'] = date('Y-m-d',time());
-            if($fatherId == $f['father_id']){
-                $fathers[$k]['type'] = 1;
-            }
-            $bonusPercent = Db::name('member_bonus_percent')->where('level',$f['level'])->find(); //收益百分比
-            $percent = $bonusPercent ? ($bonusPercent['percent']/100) : 0;
-            $memberSet = Db::name('member_set')->where('id',$minMemberId)->find();
+            $fathers[$k]['date'] = date('Y-m-d', time());
+            $fathers[$k]['type'] = $f['level'];
+            $bonusPercent = Db::name('member_bonus_percent')->where('level', $f['level'])->find(); //收益百分比
+            $percent = $bonusPercent ? ($bonusPercent['percent'] / 100) : 0;
+            $memberSet = Db::name('member_set')->where('id', $minMemberId)->find();
             $bonus = $memberSet['bonus']; //会员等级对碰奖金
             $amount = $bonus * $percent; //对碰奖金
             $fathers[$k]['amount'] = $amount;
@@ -115,12 +113,12 @@ class UserBonus extends Model
 //        array_push($ids,$userId);
 
         $limit = ($page - 1) * $pageSize;
-        $lists = $this->where('user_id',$userId)
+        $lists = $this->where('user_id', $userId)
             ->field('id,user_id,amount,created_at')
             ->order('id desc')
-            ->limit($limit,$pageSize)
+            ->limit($limit, $pageSize)
             ->select();
-        foreach ($lists as $k=>$v){
+        foreach ($lists as $k => $v) {
             $lists[$k]['real_name'] = $v->user->real_name;
             unset($lists[$k]['user']);
         }
@@ -131,6 +129,6 @@ class UserBonus extends Model
 
     public function user()
     {
-        return $this->belongsTo('User','user_id','id');
+        return $this->belongsTo('User', 'user_id', 'id');
     }
 }
