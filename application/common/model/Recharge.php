@@ -54,6 +54,15 @@ class Recharge extends Model
             $this->rollback();
             return false;
         }
+        if(isset($post['user_coupons_id'])){
+            $userCoupon = UserCoupons::where('id',$post['user_coupons_id'])->find();
+            $userCoupon->status = 1;
+            if(!$userCoupon->save()){
+                $this->error = '优惠券状态修改失败';
+                $this->rollback();
+                return false;
+            }
+        }
         $this->commit();
 
         return true;

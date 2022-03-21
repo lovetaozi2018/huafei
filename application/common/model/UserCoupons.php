@@ -47,6 +47,7 @@ class UserCoupons extends Model
         if(sizeof($userCoupons) != 0){
             foreach ($userCoupons as $k=>$v){
                $coupon = $v->coupons;
+               $userCoupons[$k]['user_coupons_id'] = $v['id'];
                $userCoupons[$k]['zhekou'] = $coupon['zhekou'];
                $userCoupons[$k]['content'] = $coupon['content'];
                $userCoupons[$k]['start_date'] = $coupon['start_date'];
@@ -54,6 +55,7 @@ class UserCoupons extends Model
                $userCoupons[$k]['logo'] = $coupon['logo'] ? Env::get('api_path').$coupon['logo'] : '';
             }
             unset($userCoupons[$k]['coupons']);
+            unset($userCoupons[$k]['id']);
         }
 
         return $userCoupons;
