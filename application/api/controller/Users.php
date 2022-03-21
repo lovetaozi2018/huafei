@@ -103,6 +103,7 @@ class Users extends Base
             : json(['code' => 201,'msg' => '认证失败']);
     }
 
+
     /**
      * 话费充值
      *
@@ -113,27 +114,17 @@ class Users extends Base
      */
     public function recharge()
     {
-        $data = input();
         $model = new Recharge();
-        $res = $model->recharge($data);
-        if(!$res){
-            return json(['code' => 201,'msg' => $model->getError()]);
+        if($this->request->isPost()){
+            $data = input();
+            $res = $model->recharge($data);
+            if(!$res){
+                return json(['code' => 201,'msg' => $model->getError()]);
+            }
+            return json(['code' => 200,'msg' => '申请成功']);
         }
-        return json(['code' => 200,'msg' => '申请成功']);
     }
 
-    /**
-     * 话费订单列表
-     *
-     */
-    public function lists()
-    {
-        $userId = $this->user['id'];
-        $model = new Recharge();
-        $data = $model->lists($userId);
-
-        return json(['code' => 200,'data' => $data]);
-    }
 
     /**
      * 团队明细

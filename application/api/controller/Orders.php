@@ -2,11 +2,36 @@
 
 namespace app\api\controller;
 
+use app\common\model\User;
 use app\common\model\UserOrder;
 use think\Db;
 
 class Orders extends Base
 {
+
+
+    /**
+     * 充值余额
+     *
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function recharge()
+    {
+        if($this->request->isPost()){
+            $model = new UserOrder();
+            $data = input();
+            $res = $model->recharge($data);
+            return $res ? json(['code' => 200,'msg' => '订单添加成功'])  :
+                json(['code' => 201,'msg' => '订单添加失败']);
+        }
+        $money = Db::name('member_set')->field('id,level,money')->select();
+        return json(['code' => 200,'data' => $money]);
+
+    }
+
     /**
      * 申请提现
      *
@@ -49,15 +74,6 @@ class Orders extends Base
             ->limit($limit,$pageSize)
             ->order('id desc')
             ->select();
-        foreach ($orders as $k => $v){
-            if($v['status'] == 1){
-                $orders[$k]['status'] = '成功';
-            }elseif($v['status'] == 2){
-                $orders[$k]['status'] = '失败';
-            }else{
-                $orders[$k]['status'] = '申请中';
-            }
-        }
 
         return json(['code' => 200,'data' => $orders]);
 
@@ -90,15 +106,8 @@ class Orders extends Base
     public function fundsDetail()
     {
         $userId = input('user_id');
-        $page = input('page') ? input('page') : 1;
-        $pageSize = input('page_size') ? input('page_size') : 10;
-        $limit = ($page - 1) * $pageSize;
         $model = new UserOrder();
-        $orders = $model->where('user_id',$userId)
-            ->limit($limit,$pageSize)
-            ->order('id desc')
-            ->select();
-
-        return json(['code' => 200,'data' => $orders]);
+        $data = $model->fundsDetail($userId);
+        return json(['code' => 200,'data' => $data]);
     }
 }

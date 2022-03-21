@@ -110,17 +110,27 @@ class UserBonus extends Model
         $lists = [];
         $page = input('page') ? input('page') : 1;
         $pageSize = input('page_size') ? input('page_size') : 5;
-        $model = new User();
-        $ids = $model->getChildren($userId);
-        array_push($ids,$userId);
+//        $model = new User();
+//        $ids = $model->getChildren($userId);
+//        array_push($ids,$userId);
 
         $limit = ($page - 1) * $pageSize;
         $lists = $this->where('user_id',$userId)
+            ->field('id,user_id,amount,created_at')
             ->order('id desc')
             ->limit($limit,$pageSize)
             ->select();
+        foreach ($lists as $k=>$v){
+            $lists[$k]['real_name'] = $v->user->real_name;
+            unset($lists[$k]['user']);
+        }
 
         return $lists;
 
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('User','user_id','id');
     }
 }

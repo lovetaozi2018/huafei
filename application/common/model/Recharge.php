@@ -37,6 +37,7 @@ class Recharge extends Model
             'price' => $post['price'],
             'real_price' => $post['real_price'],
             'order_no' => $orderNo,
+            'ctime' => date('Y-m-d H:i:s',time()),
             'month' => date('Y-m',time()),
             'date' => date('Y-m-d',time()),
         ];
