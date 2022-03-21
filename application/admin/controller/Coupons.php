@@ -23,9 +23,7 @@ class Coupons extends Base
         $this->assign('coupons', $coupons);
         return $this->fetch();
     }
-
-
-
+    
 
     /**
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|\think\response\View
