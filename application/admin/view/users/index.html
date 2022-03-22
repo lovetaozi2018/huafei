@@ -27,7 +27,7 @@
                         <th>手机号码</th>
                         <th>昵称</th>
                         <th>真实姓名</th>
-                        <th>会员等级</th>
+                        <th>会员</th>
                         <th>上级</th>
                         <th>余额</th>
                         <th>奖金</th>
@@ -52,7 +52,7 @@
                             {else /}VIP{$v.member_id}
                             {/if}
                         </td>
-                        <td>{$v.father_id}</td>
+                        <td>{$v.father}</td>
                         <td>{$v.money}</td>
                         <td>{$v.bonus}</td>
                         <td>{if $v.sex == 1}男

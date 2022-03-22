@@ -4,13 +4,20 @@
 {include file="left" /}
 {/block}
 {block name="content"}
-
+<style>
+    tbody tr {
+        height:100px;
+    }
+    tbody tr td{
+        line-height:100px !important;
+    }
+</style>
 <section class="content">
     <div class="row">
         <div class="col-xs-12">
             <div class="navbar navbar-default">
                 <form action="" id="search-form2" class="navbar-form form-inline" method="get" onsubmit="return false">
-                    <span class="control-label"><i class="fa fa-picture-o"></i>收款码管理</span>
+                    <span class="control-label"><i class="fa fa-qrcode"></i>&nbsp;收款码管理</span>
                     <div class="pull-right">
                         <a href="{:url('news/add')}" class="btn btn-sm btn-info edit_btn"><i class="fa fa-plus"></i>添加</a>
                     </div>
@@ -19,11 +26,12 @@
 
             <!-- /.box-header -->
             <div class="box-body">
-                <table id="example1" class="table table-bordered table-striped">
+                <table id="example" class="table table-bordered table-striped">
                     <thead>
                     <tr>
                         <th>id</th>
-                        <th>账号</th>
+                        <th>手机号码</th>
+                        <th>真实姓名</th>
                         <th>微信收款码</th>
                         <th>支付宝收款码</th>
                         <th>操作</th>
@@ -34,12 +42,12 @@
                     <tr>
                         <td>{$v.id}</td>
                         <td>{$v.phone}</td>
-                        <td>{$v.money}</td>
-                        <td>{$v.bonus}</td>
+                        <td>{$v.real_name}</td>
+                        <td><img src="{$v.wx_img}" style="height:100px;"></td>
+                        <td><img src="{$v.zfb_img}" style="height:100px;"></td>
                         <td>
-                            <a href="{:url('news/edit',['id'=> $v.id])}"
-                               class="btn btn-success btn-icon btn-circle btn-xs"><i class="fa fa-edit"></i></a>
-                            <a data-id="{$v.id}" href="javascript:void(0)" class="btn btn-danger btn-icon btn-circle btn-xs delete" ><i class="fa fa-trash"></i></a>
+                            <a href="{:url('users/codeEdit',['id'=> $v.id])}"
+                               class="btn btn-success btn-icon btn-circle btn-xs">上传收款码</a>
                         </td>
                     </tr>
                     {/volist}
@@ -57,6 +65,28 @@
 {/block}
 {block name="js"}
 <script>
+    $(function () {
+        $('#example').DataTable({
+            "pagingType": "full_numbers",  //显示尾页和首页
+            "aLengthMenu": [5,10,25,50,100],
+            "language": {
+                "sInfo": "当前显示第 _START_ 到第 _END_ 条，共 _TOTAL_ 条",
+                "search":"搜索",
+                "sInfoFiltered":"(从 _MAX_ 项结果过滤)",
+                "lengthMenu":"显示_MENU_条记录",
+                "zeroRecords":"对不起,暂时没有记录",
+                "info":"第_PAGE_页/共_PAGES_页",
+                "infoEmpty":"暂无信息",
+                "paginate":{
+                    "sFirst":"首页",
+                    "previous":"上一页",
+                    "next":"下一页",
+                    "sLast":"尾页"
+                }
+            }
+        });
+    });
+
     $('.delete').on('click', function () {
         var id = $(this).eq(0).attr('data-id');
         var url = window.location.href;

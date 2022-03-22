@@ -10,7 +10,7 @@ class Orders extends Base
 {
     /**
      * 充值或提现列表
-     *  type_id|1:充值，2:提现
+     *  type_id|1:充值，2:提现,3:划转
      * @return string
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException

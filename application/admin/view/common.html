@@ -247,6 +247,7 @@
     $(function () {
         $('#example1').DataTable({
             "pagingType": "full_numbers",  //显示尾页和首页
+            "aLengthMenu": [10,25,50,100],
             "language": {
                 "sInfo": "当前显示第 _START_ 到第 _END_ 条，共 _TOTAL_ 条",
                 "search":"搜索",
@@ -274,6 +275,7 @@
     });
 
 </script>
+
 {block name="js"}
 
 {/block}

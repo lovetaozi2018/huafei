@@ -18,6 +18,10 @@ class Users extends Base
     {
         $users = Db::name('user')
             ->select();
+        foreach ($users as $k => $u){
+            $father = Db::name('user')->where('id',$u['father_id'])->find();
+            $users[$k]['father'] = $father ? ($father['real_name'] ? $father['real_name'] : $father['username']) : '无';
+        }
 
         $this->assign('users', $users);
         return $this->fetch();
@@ -45,6 +49,43 @@ class Users extends Base
         ]);
     }
 
+    /**
+     * 收款码
+     *
+     * @return false|mixed|string
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function code()
+    {
+        if($this->request->isPost()){
+            $id = input('id');
+            $model = new User();
+            $files = $_FILES;
+            $res = $model->codeEdit($files,$id);
+            return $res ? json(['code' => 200,'msg' => '上传成功']) :
+                json(['code' => 201,'msg' => $model->getError()]);
+        }
+        $users = Db::name('user')
+            ->select();
+        $this->assign('users', $users);
+        return $this->fetch();
+    }
+
+    public function codeEdit($id)
+    {
+        $user = Db::name('user')->where('id',$id)->find();
+        $this->assign('user', $user);
+        return $this->fetch('code_edit');
+    }
+
+    /**
+     * 充值界面
+     *
+     * @param $id
+     * @return false|mixed|string
+     */
     public function recharge($id)
     {
         $this->assign('id', $id);
@@ -124,14 +165,7 @@ class Users extends Base
         return $this->fetch();
     }
 
-    public function code()
-    {
-        $users = Db::name('user')
-            ->select();
 
-        $this->assign('users', $users);
-        return $this->fetch();
-    }
 
 
 }
