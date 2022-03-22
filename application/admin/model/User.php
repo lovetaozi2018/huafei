@@ -26,50 +26,27 @@ class User extends Model
     {
         $this->startTrans();
         $user = User::where('id',$data['id'])->find();
-        $user->money = $data['amount'] + $user['money'];
-        $setModel = new MemberSet();
-        // 获取充值金额能达到的会员等级
-        $getMemberId = $setModel->getMemberId($data['amount']);
-        if($getMemberId){
-            $getMember = MemberSet::where('id',$getMemberId)->find();
-            $memberId = $user['member_id'];
-            $member = MemberSet::where('id',$memberId)->find();
-            if($getMember['level'] > $member['level']){ //如果会员等级提高，则更新会员等级
-                $user->member_id = $getMemberId;
-            }
-        }
-        $res = $user->save();
-        if(!$res){
+        // 因为是手动充值 订单支付状态直接是已完成
+        $model = new UserOrder();
+        $re = $model->allowField(true)->save([
+            'user_id' => $data['id'],
+            'amount' => $data['bonus'],
+            'type' => 1,
+            'ctime' => date('Y-m-d H:i:s',time()),
+            'order_no' => getOrderNo(),
+            'status' => 1
+        ]);
+        if(!$re){
             $this->error = '充值失败';
+            $this->rollback();
             return false;
         }
-        // 如果会员等级提升,则发生对碰
-        if($getMemberId && ($getMember['level'] > $member['level'])){
-            $model = new UserBonus();
-            $userBonus = $model->settleBonus($data['id']);
-            $rows = [];
-            if(sizeof($userBonus) != 0){
-                $res = $model->allowField(true)->insertAll($userBonus);
-                if(!$res){
-                    $this->error = '对碰结算失败';
-                    $this->rollback();
-                    return false;
-                }
-                foreach ($userBonus as $u){
-                    $father = $this->where('id',$u['father_id'])->find();
-                    $rows[] = [
-                        'id' => $u['father_id'],
-                        'bonus' => $father['bonus'] + $u['amount'],
-                    ];
-                }
-
-                $re = $this->saveAll($rows);
-                if(!$re){
-                    $this->error = '用户奖金结算失败';
-                    $this->rollback();
-                    return false;
-                }
-            }
+        $user->bonus = $data['bonus'] + $user['bonus'];
+        $res = $user->save();
+        if(!$res){
+            $this->error = '奖金余额修改失败';
+            $this->rollback();
+            return false;
         }
 
         $this->commit();

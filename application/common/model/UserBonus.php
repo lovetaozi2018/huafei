@@ -58,7 +58,7 @@ class UserBonus extends Model
             $fathers[$k]['user1_id'] = $userId;
             $fathers[$k]['user2_id'] = $childId;
             $fathers[$k]['date'] = date('Y-m-d', time());
-            $fathers[$k]['type'] = $f['level'];
+            $fathers[$k]['level'] = $f['level'];
             $bonusPercent = Db::name('member_bonus_percent')->where('level', $f['level'])->find(); //收益百分比
             $percent = $bonusPercent ? ($bonusPercent['percent'] / 100) : 0;
             $memberSet = Db::name('member_set')->where('id', $minMemberId)->find();
@@ -114,7 +114,7 @@ class UserBonus extends Model
 
         $limit = ($page - 1) * $pageSize;
         $lists = $this->where('user_id', $userId)
-            ->field('id,user_id,amount,created_at')
+            ->field('id,user_id,amount,level,created_at')
             ->order('id desc')
             ->limit($limit, $pageSize)
             ->select();

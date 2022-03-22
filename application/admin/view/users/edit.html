@@ -34,7 +34,7 @@
             <div class="form-group">
                 <label class="col-sm-3 control-label">充值金额：</label>
                 <div class="col-sm-4">
-                    <input name="money" class="form-control" type="text" id="money">
+                    <input name="bonus" class="form-control" type="text" id="bonus">
                 </div>
             </div>
 
@@ -64,14 +64,14 @@
         e.preventDefault();
         var formData = new FormData();
         var id = $('#id').val();
-        var money = $('#money').val();
+        var bonus = $('#bonus').val();
 
-        if (!money) {
+        if (!bonus) {
             layer.msg("充值金额不能为空");
             return false;
         }
         formData.append("id", id);
-        formData.append("money", money);
+        formData.append("bonus", bonus);
         $.ajax({
             type: 'POST',
             dataType: 'json',

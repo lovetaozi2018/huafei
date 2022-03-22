@@ -11,7 +11,7 @@ class Orders extends Base
 
 
     /**
-     * 充值余额
+     * 奖金充值
      *
      * @return \think\response\Json
      * @throws \think\db\exception\DataNotFoundException
@@ -89,6 +89,8 @@ class Orders extends Base
     public function transfer()
     {
         $data = input();
+        $data['user_id'] = $this->user['id'];
+        tlogs($data);
         $model = new UserOrder();
         $res = $model->transfer($data);
         return $res ? json(['code' => 200,'msg' => '划转成功'])

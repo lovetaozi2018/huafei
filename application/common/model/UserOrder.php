@@ -2,6 +2,7 @@
 
 namespace app\common\model;
 
+use app\admin\model\User;
 use think\Db;
 use think\Model;
 
@@ -10,7 +11,7 @@ class UserOrder extends Model
     protected $table = 'hf_user_order';
 
     /**
-     * 充值余额
+     * 奖金账户充值
      *
      * @param array $post
      * @return bool
@@ -68,26 +69,90 @@ class UserOrder extends Model
         return true;
     }
 
+
     /**
-     * 奖金划转
+     * 把奖金划转到话费账户
      *
-     * @param array $data
+     * @param $data
      * @return bool
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public function transfer(array $data)
+    public function transfer($data)
     {
+        $this->startTrans();
         $user = User::where('id',$data['user_id'])->find();
         if($user['bonus'] < $data['amount']){
             $this->error = '金额不足';
             return false;
         }
+        // 添加划转订单
+        $result = $this->allowField(true)->save([
+            'user_id' => $user['id'],
+            'amount' => $data['amount'],
+            'type' => 3,
+            'ctime' => date('Y-m-d H:i:s',time()),
+            'order_no' => getOrderNo(),
+            'status' => 1,
+        ]);
+        if(!$result){
+            $this->error = '订单创建失败';
+            $this->rollback();
+            return false;
+        }
+        // 修改用户余额
         $user->bonus = ($user['bonus']-$data['amount']);
         $user->money = ($user['money']+$data['amount']);
+        $setModel = new MemberSet();
+        // 获取充值金额能达到的会员等级
+        $getMemberId = $setModel->getMemberId($data['amount']);
+        if($getMemberId){
+            $getMember = MemberSet::where('id',$getMemberId)->find();
+            $memberId = $user['member_id'];
+            $member = MemberSet::where('id',$memberId)->find(); //当前会员等级
+            if($getMember['level'] > $member['level']){ //如果会员等级提高，则更新会员等级
+                $user->member_id = $getMemberId;
+            }
+        }
         $res = $user->save();
-        return $res ? true : false;
+        if(!$res){
+            $this->error = '划转失败';
+            $this->rollback();
+            return false;
+        }
+        // 如果会员等级提升,则发生对碰
+        if($getMemberId && ($getMember['level'] > $member['level'])){
+            $model = new UserBonus();
+            $userModel = new User();
+            $userBonus = $model->settleBonus($data['id']);
+            $rows = [];
+            if(sizeof($userBonus) != 0){
+                $res = $model->allowField(true)->insertAll($userBonus);
+                if(!$res){
+                    $this->error = '对碰结算失败';
+                    $this->rollback();
+                    return false;
+                }
+                foreach ($userBonus as $u){
+                    $father = $this->where('id',$u['father_id'])->find();
+                    $rows[] = [
+                        'id' => $u['father_id'],
+                        'bonus' => $father['bonus'] + $u['amount'],
+                    ];
+                }
+                // 结算奖金，修改用户奖金
+                $re = $userModel->saveAll($rows);
+                if(!$re){
+                    $this->error = '用户奖金结算失败';
+                    $this->rollback();
+                    return false;
+                }
+            }
+        }
+
+        $this->commit();
+        return true;
     }
 
     /**

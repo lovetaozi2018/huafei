@@ -104,22 +104,6 @@ class Users extends Base
             : json(['code' => 201,'msg' => '认证失败']);
     }
 
-    /**
-     * 用户可用优惠券
-     *
-     * @return \think\response\Json
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
-     */
-    public function coupons()
-    {
-        $userId = $this->user['id'];
-        $model = new UserCoupons();
-        $userCoupons = $model->getCoupons($userId);
-
-        return json(['code' => 200,'data' => $userCoupons]);
-    }
 
     /**
      * 话费充值
@@ -219,18 +203,22 @@ class Users extends Base
     }
 
     /**
-     * 领取优惠券
+     * 上传收款码
      *
      * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
      */
-    public function receiveCoupons()
+    public function uploadCode()
     {
-        $post = input();
-        $post['user_id'] = $this->user['id'];
-        $model = new UserCoupons();
-        $res = $model->adds($post);
-        return $res ? json(['code' => 200,'msg' => '领取成功']) : json(['code' => 201,'msg' => '领取失败']);
+        $file = $_FILES;
+        $model = new User();
+        $res = $model->uploadCode($file,$this->user['id']);
+        return $res ? json(['code' => 200,'msg' => '上传成功']) :
+            json(['code' => 201,'msg' => $model->getError()]);
     }
+
 
 
     public function test()

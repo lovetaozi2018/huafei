@@ -2,11 +2,11 @@
 
 namespace app\api\controller;
 
-use think\Controller;
+use app\common\model\UserCoupons;
 use think\Db;
 use think\facade\Env;
 
-class Coupons extends Controller
+class Coupons extends Base
 {
     public function index()
     {
@@ -15,6 +15,7 @@ class Coupons extends Controller
         $pageSize = input('page_size') ? input('page_size') : 10;
         $limit = ($page - 1) * $pageSize;
 
+        $userId = $this->user['id'];
         $coupons = Db::name('mobile_coupons')->where('start_date','<=',$date)
             ->where('end_date','>=',$date)
             ->limit($limit,$pageSize)
@@ -22,8 +23,30 @@ class Coupons extends Controller
             ->select();
         foreach ($coupons as $k=>$v){
             $coupons[$k]['logo'] = $v['logo'] ? Env::get('api_path') .$v['logo'] : '';
+            $coupon = Db::name('user_coupons')->where('user_id',$userId)
+                ->where('coupons_id',$v['id'])
+                ->find();
+            $status = $coupon ? ($coupon['status'] ? 2 : 1) : 0;
+            $coupons[$k]['status'] = $status; // 0:未领取，2:未使用,1:已使用
+            $coupons[$k]['user_coupons_id'] = $status==1 ? $coupon['id'] : 0; // 0:未领取，2:未使用,1:已使用
+
         }
 
         return json(['code' => 200,'data' => $coupons]);
     }
+
+    /**
+     * 领取优惠券
+     *
+     * @return \think\response\Json
+     */
+    public function receiveCoupons()
+    {
+        $post = input();
+        $post['user_id'] = $this->user['id'];
+        $model = new UserCoupons();
+        $res = $model->adds($post);
+        return $res ? json(['code' => 200,'msg' => '领取成功']) : json(['code' => 201,'msg' => '领取失败']);
+    }
+
 }

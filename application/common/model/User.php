@@ -204,6 +204,47 @@ class User extends Model
     }
 
     /**
+     * 上传收款码
+     *
+     * @param $files
+     * @param $uid
+     * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function uploadCode($files, $uid)
+    {
+        if(array_key_exists('wx',$files)){
+            $img = 'wx';
+            $file = $files['wx'];
+        }
+        if(array_key_exists('zfb',$files)){
+            $img = 'zfb';
+            $file = $files['zfb'];
+        }
+        $filePath = '/uploads/images/code/'.$uid;
+        $res = $this->uploadImg($file,$filePath);
+        if($res['code'] != 200){
+            $this->error = $res['msg'];
+            return false;
+        }
+        $user = $this->where('id',$uid)->find();
+        if($img == 'wx'){
+            $user->wx_img = $res['path'];
+        }elseif($img == 'zfb'){
+            $user->zfb_img = $res['path'];
+        }
+        $re = $user->save();
+        if(!$re){
+            $this->error = '收款码上传失败';
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * 编辑用户(头像、昵称、性别、简介)
      *
      * @param array $data
