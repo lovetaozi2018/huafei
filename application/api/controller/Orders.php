@@ -20,15 +20,15 @@ class Orders extends Base
      */
     public function recharge()
     {
-        if($this->request->isPost()){
+        if ($this->request->isPost()) {
             $model = new UserOrder();
             $data = input();
             $res = $model->recharge($data);
-            return $res ? json(['code' => 200,'msg' => '订单添加成功'])  :
-                json(['code' => 201,'msg' => '订单添加失败']);
+            return $res ? json(['code' => 200, 'msg' => '订单添加成功']) :
+                json(['code' => 201, 'msg' => '订单添加失败']);
         }
         $money = Db::name('member_set')->field('id,level,money')->select();
-        return json(['code' => 200,'data' => $money]);
+        return json(['code' => 200, 'data' => $money]);
 
     }
 
@@ -48,8 +48,8 @@ class Orders extends Base
         $data = input();
         $model = new UserOrder();
         $res = $model->applyWithdraw($data);
-        return $res ? json(['code' => 200,'msg' => '申请成功'])
-            : json(['code' => 201,'msg' => $model->getError()]);
+        return $res ? json(['code' => 200, 'msg' => '申请成功'])
+            : json(['code' => 201, 'msg' => $model->getError()]);
 
     }
 
@@ -69,13 +69,13 @@ class Orders extends Base
         $limit = ($page - 1) * $pageSize;
         $model = new UserOrder();
 
-        $orders = $model->where('user_id',$data['user_id'])
-            ->where('type',$data['type_id'])
-            ->limit($limit,$pageSize)
+        $orders = $model->where('user_id', $data['user_id'])
+            ->where('type', $data['type_id'])
+            ->limit($limit, $pageSize)
             ->order('id desc')
             ->select();
 
-        return json(['code' => 200,'data' => $orders]);
+        return json(['code' => 200, 'data' => $orders]);
 
     }
 
@@ -92,8 +92,8 @@ class Orders extends Base
         $data['user_id'] = $this->user['id'];
         $model = new UserOrder();
         $res = $model->transfer($data);
-        return $res ? json(['code' => 200,'msg' => '划转成功'])
-            : json(['code' => 201,'msg' => '划转失败']);
+        return $res ? json(['code' => 200, 'msg' => '划转成功'])
+            : json(['code' => 201, 'msg' => '划转失败']);
     }
 
     /**
@@ -109,19 +109,29 @@ class Orders extends Base
         $userId = input('user_id');
         $model = new UserOrder();
         $data = $model->fundsDetail($userId);
-        return json(['code' => 200,'data' => $data]);
+        return json(['code' => 200, 'data' => $data]);
     }
-    
-     public function phoneList()
+
+    /**
+     * 话费充值金额
+     *
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function phoneList()
     {
-        $list = [
-            ['id'=>1,'money'=>10],
-            ['id'=>2,'money'=>20],
-            ['id'=>3,'money'=>30],
-            ['id'=>4,'money'=>50],
-            ['id'=>5,'money'=>100],
-            ['id'=>6,'money'=>200],
-        ];
-        return json(['code' => 200,'data' => $list]);
+        $list = [];
+        $huafei = Db::name('system_mobile')->find();
+        $content = explode('|',$huafei['content']);
+        foreach ($content as $k => $v){
+            $list[] = [
+                'id' => $k+1,
+                'money' => $v,
+            ];
+        }
+
+        return json(['code' => 200, 'data' => $list]);
     }
 }

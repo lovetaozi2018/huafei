@@ -6,6 +6,7 @@ use app\common\model\MemberSet;
 use app\common\model\Recharge;
 use app\common\model\User;
 use app\common\model\UserBonus;
+use app\common\model\UserChild;
 use app\common\model\UserCoupons;
 use think\App;
 use think\Db;
@@ -155,16 +156,10 @@ class Users extends Base
      */
     public function children()
     {
-        $model = new User();
-        $ids = $model->getChildren($this->user['id']);
-        $ids = $ids ? $ids : [];
-        $users = Db::name('user')
-            ->where('id','in',$ids)
-            ->field('member_id,count(id) as sum')
-            ->group('member_id')
-            ->select();
+        $model = new UserChild();
+        $data = $model->myChildren($this->user['id']);
 
-        return json(['code' => 200,'data' => $users,'total' => count($ids)]);
+        return json(['code' => 200,'data' => $data['data'],'total' => $data['total']]);
 
     }
 
@@ -178,22 +173,33 @@ class Users extends Base
      */
     public function members()
     {
+        $page = input('page') ? input('page') : 1;
+        $pageSize = input('page_size') ? input('page_size') : 10;
         $data = input();
-        $model = new User();
-        $ids = $model->getChildren($this->user['id']);
+        $limit = ($page - 1) * $pageSize;
         $where = [];
-        if(isset($data['member_id']) && !empty($data['member_id'])){
-            $where[] = ['member_id', '=', $data['member_id']];
+        if(isset($data['level']) && !empty($data['level'])){
+            $where[] = ['level', '=', $data['level']];
         }
+        $model = new UserChild();
+        $ids = $model->getChildIds($this->user['id']);
+
         if(isset($data['keyword']) && !empty($data['keyword'])){
             $where[] = ['username|real_name|phone', 'like', '%' . $data['keyword'] . '%'];
         }
+
         $members = Db::name('user')
             ->where('id','in',$ids)
             ->where($where)
             ->field('id,username,phone,real_name,money,member_id,created_at')
+            ->limit($limit, $pageSize)
             ->order('id desc')
             ->select();
+
+        foreach ($members as $k=>$m){
+            $vip = Db::name('member_set')->where('id',$m['member_id'])->find();
+            $members[$k]['level'] = $vip ? $vip['level'] : 0;
+        }
 
         return json(['code' => 200,'data' => $members]);
     }

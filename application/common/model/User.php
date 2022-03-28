@@ -88,10 +88,11 @@ class User extends Model
             'password' => md5_pass($data['password']),
             'reg_ip' => get_ip(),
         ];
-        if (isset($data['father_id']) && !empty($data['father_id'])) {
-            $fatherId = $data['father_id'];
+        if (isset($data['uid']) && !empty($data['uid'])) {
+            $fatherId = $data['uid'];
             $post['father_id'] = $fatherId;
         }
+
         $id = Db::name('user')->insertGetId($post);
         $user = $this->where('id', $id)->find();
         $user->token = $this->createToken($user, $this->expire_time);
@@ -104,7 +105,8 @@ class User extends Model
 
         if ($fatherId) {
             $rows = [];
-            $fatherIds = $this->getFather($fatherId);
+            $fatherIds = $this->getFather($id);
+            $fatherIds = $fatherIds ? $fatherIds : [];
             if (sizeof($fatherIds) != 0) {
                 foreach ($fatherIds as $k => $v) {
                     $father = $this->where('id', $v['father_id'])->find();
@@ -291,7 +293,7 @@ class User extends Model
         }
         // 昵称
         if (isset($data['username']) && !empty($data['username'])) {
-            $user->sex = $data['sex'];
+            $user->username = $data['username'];
         }
         // 简介
         if (isset($data['remark']) && !empty($data['remark'])) {
@@ -387,6 +389,9 @@ class User extends Model
         }
         return $childIds;
     }
+
+
+
 
     /**
      * 团队明细

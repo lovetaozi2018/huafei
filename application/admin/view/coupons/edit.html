@@ -57,7 +57,7 @@
                 <div class="col-sm-4">
                     <input name="logo" class="form-control" type="file" id="logo" onchange="preview(this)" accept="image/gif, image/jpeg,image/png">
                     <div id="preview">
-                        {if $coupon.logo}
+                        {if isset($coupon) && $coupon.logo}
                         <img src="{$coupon.logo}" style="height: 100px;margin-top: 5px;"/>
                         {/if}
                     </div>
