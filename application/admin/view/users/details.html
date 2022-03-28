@@ -1,0 +1,107 @@
+{extend name="common" /}
+<!-- 菜单开始 -->
+{block name="menu"}
+{include file="left" /}
+{/block}
+{block name="content"}
+
+<section class="content">
+    <div class="row">
+
+        <!-- /.box-header -->
+        <div class="box-body">
+            <div class="col-xs-12">
+                <div class="box-header">
+                    <h3 class="box-title">用户详情</h3>
+                    <div class="box-tools pull-right">
+                        <button id="record-list" type="button" class="btn btn-box-tool">
+                            <a href="{:url('users/index')}"><i class="fa fa-mail-reply text-blue"> 返回列表</i></a>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td class="text-right" style="width: 100px">姓名</td>
+                                    <td>{$user.real_name}</td>
+                                    <td class="text-right" style="width: 100px">昵称</td>
+                                    <td>{$user.username}</td>
+                                    <td class="text-right" style="width: 100px">手机号码</td>
+                                    <td>{$user.phone}</td>
+
+                                </tr>
+                                <tr>
+                                    <td class="text-right" style="width: 100px">性别</td>
+                                    <td>{if $user.sex == 1}男
+                                        {else if $user.status==2 /}女
+                                        {/if}
+                                    </td>
+                                    <td class="text-right" style="width: 100px">上级</td>
+                                    <td>{$user.father}</td>
+                                    <td class="text-right" style="width: 100px">会员等级</td>
+                                    <td>{if $user.member_id == 0}普通用户
+                                        {else /}VIP{$user.member_id}
+                                        {/if}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-right" style="width: 100px">用户状态</td>
+                                    <td>{if $user.status == 1}<a class="btn btn-sm btn-success btn-xs">正常</a>
+                                        {else if $user.status==0 /}<a class="btn btn-sm btn-warning btn-xs">禁止登录</a>
+                                        {/if}
+                                    </td>
+                                    <td class="text-right" style="width: 100px">实名状态</td>
+                                    <td> {if $user.rstatus == 0}<a class="btn btn-sm btn-danger btn-xs">未实名</a>
+                                        {else if $user.rstatus==1 /}<a class="btn btn-sm btn-success btn-xs">已实名</a>
+                                        {/if}
+                                    </td>
+                                    <td class="text-right" style="width: 100px">身份证号码</td>
+                                    <td>{$user.id_card}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-right" style="width: 100px">注册ip</td>
+                                    <td>{$user.reg_ip}</td>
+                                    <td class="text-right" style="width: 100px">注册时间</td>
+                                    <td>{$user.created_at}</td>
+                                    <td class="text-right" style="width: 100px">最后登录</td>
+                                    <td>{$user.last_login_time}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-right" style="width: 100px">银行卡号</td>
+                                    <td>{$user.bank_card}</td>
+                                    <td class="text-right" style="width: 100px">所属银行</td>
+                                    <td>{$user.bank_name}</td>
+                                    <td class="text-right" style="width: 100px">备注信息</td>
+                                    <td>{$user.bank_remark}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-right" style="width: 100px;line-height: 100px;">头像</td>
+                                    <td><img src="{$user.head_img}" style="height: 100px;"></td>
+                                    <td class="text-right" style="width: 120px;line-height: 100px;">微信收款码</td>
+                                    <td><img src="{$user.wx_img}" style="height: 100px;"></td>
+                                    <td class="text-right" style="width: 120px;line-height: 100px;">支付宝收款码</td>
+                                    <td><img src="{$user.zfb_img}" style="height: 100px;"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-right">话费余额</td>
+                                    <td>{if $user.money != 0}￥{$user.money}{/if}</td>
+                                    <td class="text-right">奖金余额</td>
+                                    <td>{if $user.bonus != 0}￥{$user.bonus}{/if}</td>
+                                    <td class="text-right" style="width: 100px">用户简介</td>
+                                    <td>{$user.remark}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.box-body -->
+    <!-- /.box -->
+
+</section>
+{/block}
+

@@ -31,6 +31,6 @@ class Base extends Controller
         $this->assign('num1',  $num1);
         $this->assign('num2',  $num2);
         $this->assign('num3',  $num3);
-        $this->assign('user',  $this->user);
+        $this->assign('admin',  $this->user);
     }
 }

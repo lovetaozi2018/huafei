@@ -49,6 +49,15 @@ class Users extends Base
         ]);
     }
 
+    public function detail($id)
+    {
+        $user = Db::name('user')->where('id',$id)->find();
+        $father = Db::name('user')->where('id',$user['father_id'])->find();
+        $user['father'] = $father ? ($father['real_name'] ? $father['real_name'] : $father['username']) : '无';
+        $this->assign('user', $user);
+        return $this->fetch('details');
+    }
+
     /**
      * 收款码
      *

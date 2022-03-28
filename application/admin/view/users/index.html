@@ -75,6 +75,7 @@
                             <a data-id="{$v.id}" title="默认重置密码为123456" class="btn btn-sm btn-info  btn-xs reset">重置密码</a>
                             <a href="{:url('users/edit',['id'=> $v.id])}" class="btn btn-success btn-icon btn-circle btn-xs">充值</a>
                             <a data-id="{$v.id}" class="btn btn-sm btn-warning btn-xs forbidden">禁用</a>
+                            <a href="{:url('users/detail',['id'=> $v.id])}" class="btn btn-sm btn-info btn-xs">详情</a>
                             <a data-id="{$v.id}" href="javascript:void(0)" class="btn btn-danger btn-icon btn-circle btn-xs delete"><i class="fa fa-trash"></i></a>
                         </td>
                     </tr>
