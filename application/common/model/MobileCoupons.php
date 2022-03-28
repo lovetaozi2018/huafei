@@ -12,8 +12,10 @@ class MobileCoupons extends Model
      */
     public function adds(array $post)
     {
-        $file = $_FILES['logo'];
-        if($file){
+        $files = $_FILES;
+
+        if(isset($files['logo_img'])){
+            $file = $files['logo_img'];
             $filePath = '/uploads/images/mobile';
             $model = new User();
             $result = $model->uploadImg($file,$filePath);
@@ -23,7 +25,6 @@ class MobileCoupons extends Model
             }
             $post['logo'] = $result['path'];
         }
-
         if (isset($post['id']) && !empty($post['id'])) {
             $id = $post['id'];
             unset($post['id']);

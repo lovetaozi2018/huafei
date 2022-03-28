@@ -5,7 +5,9 @@ namespace app\common\model;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\Key;
 use think\Db;
+use think\Exception;
 use think\facade\Cache;
+use think\facade\Env;
 use think\Model;
 use Firebase\JWT\JWT;
 
@@ -22,8 +24,8 @@ class User extends Model
         $time = time(); //签发时间
         $expire = $time + $exptime; //过期时间
         $token = [
-            'iss' => '',
-            'aud' => '',
+            'iss' => 'Wangdx',
+            'aud' => 'Wangdx',
             'iat' => $time, //签发时间
             'nbf' => $time, //立即生效
             'exp' => $expire,
@@ -40,13 +42,20 @@ class User extends Model
         $key = md5($this->jwt_secret_key);//jwt签发秘钥
         try {
             $auth = JWT::decode($token, new Key($key, 'HS256'));
-            $id = $auth->id;
-            $user = $this->where('id', $id)->find()->toArray();
+            if(!$auth){
+                throw new Exception('token错误');
+            }
+            $user = $this->where('token', $token)->find();
+            if(!$user){
+                throw new Exception('token过期或用户不存在');
+            }
             return ['code' => 200, 'user' => $user];
         } catch (ExpiredException $e) {
             return ['code' => 201, 'msg' => 'token过期'];
-        } catch (\Exception $e) {
-            return ['code' => 202, 'msg' => 'token错误'];
+        } catch (Exception $e) {
+            return ['code' => 202, 'msg' => $e->getMessage(),];
+        }catch (\Exception $e) {
+            return ['code' => 203, 'msg' => 'token错误'];
         }
     }
 
@@ -215,26 +224,35 @@ class User extends Model
      */
     public function uploadCode($files, $uid)
     {
+        $user = $this->where('id',$uid)->find();
+        $filePath = '/uploads/images/code/'.$uid;
         if(array_key_exists('wx',$files)){
-            $img = 'wx';
             $file = $files['wx'];
+            $res = $this->uploadImg($file,$filePath);
+            if($res['code'] != 200){
+                $this->error = $res['msg'];
+                return false;
+            }
+            $image = $user['wx_img'] ? Env::get('api_path').$user['wx_img'] : '';
+            if(file_exists($image)){
+                unlink($image);
+            }
+            $user->wx_img = $res['path'];
         }
         if(array_key_exists('zfb',$files)){
-            $img = 'zfb';
             $file = $files['zfb'];
-        }
-        $filePath = '/uploads/images/code/'.$uid;
-        $res = $this->uploadImg($file,$filePath);
-        if($res['code'] != 200){
-            $this->error = $res['msg'];
-            return false;
-        }
-        $user = $this->where('id',$uid)->find();
-        if($img == 'wx'){
-            $user->wx_img = $res['path'];
-        }elseif($img == 'zfb'){
+            $res = $this->uploadImg($file,$filePath);
+            if($res['code'] != 200){
+                $this->error = $res['msg'];
+                return false;
+            }
+            $image = $user['zfb_img'] ? Env::get('api_path').$user['wx_img'] : '';
+            if(file_exists($image)){
+                unlink($image);
+            }
             $user->zfb_img = $res['path'];
         }
+        
         $re = $user->save();
         if(!$re){
             $this->error = '收款码上传失败';
@@ -379,6 +397,7 @@ class User extends Model
     public function memberDetails($userId)
     {
         $ids = $this->getChildren($userId);
+        $ids = $ids  ? $ids : [];
         array_push($ids,$userId);
         $totalBonus = Db::name('user')->where('id','in',$ids)->sum('bonus'); //总奖金
         //今日奖金
@@ -386,7 +405,7 @@ class User extends Model
         $bonus = Db::name('user_bonus')->where('user_id','in',$ids)
             ->where('date',$date)
             ->sum('bonus');
-        $url = '?father_id='.$userId;
+        $url = '?uid='.$userId;
 
         $data = [
             'total_bonus' => $totalBonus,

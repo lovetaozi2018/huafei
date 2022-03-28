@@ -1,0 +1,71 @@
+{extend name="common" /}
+<!-- 菜单开始 -->
+{block name="menu"}
+{include file="left" /}
+{/block}
+{block name="content"}
+<div class="box box-widget">
+    <div class="box-header with-border">
+        <span id="breadcrumb" style="color: #999; font-size: 13px;">系统设置/推广设置</span>
+
+    </div>
+    <div class="box-body">
+        <form class="form-horizontal m-t" id="signupForm" action="" method="post"
+              enctype="multipart/form-data">
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">推广内容：</label>
+                <div class="col-sm-4">
+                    <textarea name="content" class="form-control" style="height: 100px" id="content">{$promote.content}</textarea>
+                </div>
+            </div>
+            <input type="hidden" name="id" id="id" value="{$promote.id|default=''}" />
+            <div class="form-group">
+                <div class="col-sm-6 col-sm-offset-3">
+<!--                    <button class="btn btn-primary submit" type="submit">提交</button>-->
+                    <button class="btn btn-primary submit" id="save">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+
+{block name="js"}
+<script src="/static/kindeditor/kindeditor-all-min.js"></script>
+<script src="/static/kindeditor/lang/zh-CN.js"></script>
+<script type="text/javascript">
+    $('#save').on('click', function (e) {
+        e.preventDefault();
+        var formData = new FormData();
+        var id = $('#id').val();
+        var content = document.getElementById('content').value ;
+        if (!content) {
+            layer.msg("推广内容不能为空",{icon: 2});
+            return false;
+        }
+
+        formData.append("id", id);
+        formData.append("content", content);
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: "{:url('admins/promote')}",
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function (result) {
+                if (result.code == 200) {
+                    layer.msg('修改成功', {icon: 1});
+                } else {
+                    layer.msg('修改失败', {icon: 2});
+                }
+            },
+            error: function (result) {
+
+            }
+        });
+
+    });
+</script>
+{/block}

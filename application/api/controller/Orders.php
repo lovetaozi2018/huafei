@@ -90,7 +90,6 @@ class Orders extends Base
     {
         $data = input();
         $data['user_id'] = $this->user['id'];
-        tlogs($data);
         $model = new UserOrder();
         $res = $model->transfer($data);
         return $res ? json(['code' => 200,'msg' => '划转成功'])
@@ -111,5 +110,18 @@ class Orders extends Base
         $model = new UserOrder();
         $data = $model->fundsDetail($userId);
         return json(['code' => 200,'data' => $data]);
+    }
+    
+     public function phoneList()
+    {
+        $list = [
+            ['id'=>1,'money'=>10],
+            ['id'=>2,'money'=>20],
+            ['id'=>3,'money'=>30],
+            ['id'=>4,'money'=>50],
+            ['id'=>5,'money'=>100],
+            ['id'=>6,'money'=>200],
+        ];
+        return json(['code' => 200,'data' => $list]);
     }
 }

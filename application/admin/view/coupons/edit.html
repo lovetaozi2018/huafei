@@ -38,7 +38,13 @@
                            value="{$coupon.end_date|default=''}">
                 </div>
             </div>
-
+            <div class="form-group">
+                <label class="col-sm-3 control-label">活动主题：</label>
+                <div class="col-sm-4">
+                    <input name="title" class="form-control" type="text" id="title"
+                           value="{$coupon.title|default=''}">
+                </div>
+            </div>
             <div class="form-group">
                 <label class="col-sm-3 control-label">活动简介：</label>
                 <div class="col-sm-4">
@@ -49,8 +55,12 @@
             <div class="form-group">
                 <label class="col-sm-3 control-label">活动图：</label>
                 <div class="col-sm-4">
-                    <input name="logo" class="form-control" type="file" id="logo"
-                           value="{$coupon.logo|default=''}" accept="image/gif, image/jpeg,image/png">
+                    <input name="logo" class="form-control" type="file" id="logo" onchange="preview(this)" accept="image/gif, image/jpeg,image/png">
+                    <div id="preview">
+                        {if $coupon.logo}
+                        <img src="{$coupon.logo}" style="height: 100px;margin-top: 5px;"/>
+                        {/if}
+                    </div>
                 </div>
             </div>
 
@@ -88,6 +98,22 @@
         format: 'yyyy-mm-dd',
         language: 'zh-CN',
     });
+
+    function preview(file) {
+        var prevDiv = document.getElementById('preview');
+        if (file.files && file.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (evt) {
+                prevDiv.style.display = 'block';
+                prevDiv.innerHTML = '<img src="' + evt.target.result + '" style="height: 100px;margin-top: 5px;"/>';
+            };
+            reader.readAsDataURL(file.files[0]);
+        }
+        else {
+            prevDiv.innerHTML = '<div class="logoImg" style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale,src=\'' + file.value + '\'" ></div>';
+        }
+    }
+
     $('#save').on('click', function (e) {
         e.preventDefault();
         var formData = new FormData();
@@ -95,6 +121,7 @@
         var zhekou = $('#zhekou').val();
         var start_date = $('#start_date').val();
         var end_date = $('#end_date').val();
+        var title = $('#title').val();
         var content = $('#content').val();
         var logo = $('#logo')[0].files[0];
         if (!zhekou) {
@@ -109,14 +136,19 @@
             layer.msg("结束日期不能为空",{icon: 2});
             return false;
         }
+        if(start_date > end_date){
+            layer.msg("开始日期不能大于结束日期",{icon: 2});
+            return false;
+        }
 
 
         if(id){formData.append("id", id);}
         formData.append("zhekou", zhekou);
         formData.append("start_date", start_date);
         formData.append("end_date", end_date);
+        formData.append("title", title);
         formData.append("content", content);
-        formData.append("logo", logo);
+        formData.append("logo_img", logo);
         $.ajax({
             type: 'POST',
             dataType: 'json',

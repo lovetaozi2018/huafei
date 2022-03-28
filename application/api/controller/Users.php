@@ -9,6 +9,7 @@ use app\common\model\UserBonus;
 use app\common\model\UserCoupons;
 use think\App;
 use think\Db;
+use think\facade\Env;
 
 class Users extends Base
 {
@@ -25,8 +26,11 @@ class Users extends Base
     {
         $model = new User();
         $user = $model->where('id',$this->user['id'])->find();
+        $user['head_img'] = $user['head_img'] ? Env::get('api_path').$user['head_img'] : '';
+        $user['wx_img'] = $user['wx_img'] ? Env::get('api_path').$user['wx_img'] : '';
+        $user['zfb_img'] = $user['zfb_img'] ? Env::get('api_path').$user['zfb_img'] : '';
         $childIds = $model->getChildren($user['id']);
-        $user['child_count'] = count($childIds);
+        $user['child_count'] = $childIds ? count($childIds) :  0;
 
         return json(['code' => 200,'user' => $user]);
     }
@@ -153,6 +157,7 @@ class Users extends Base
     {
         $model = new User();
         $ids = $model->getChildren($this->user['id']);
+        $ids = $ids ? $ids : [];
         $users = Db::name('user')
             ->where('id','in',$ids)
             ->field('member_id,count(id) as sum')
@@ -173,13 +178,20 @@ class Users extends Base
      */
     public function members()
     {
-        $memberId = input('member_id');
+        $data = input();
         $model = new User();
         $ids = $model->getChildren($this->user['id']);
+        $where = [];
+        if(isset($data['member_id']) && !empty($data['member_id'])){
+            $where[] = ['member_id', '=', $data['member_id']];
+        }
+        if(isset($data['keyword']) && !empty($data['keyword'])){
+            $where[] = ['username|real_name|phone', 'like', '%' . $data['keyword'] . '%'];
+        }
         $members = Db::name('user')
             ->where('id','in',$ids)
-            ->where('member_id',$memberId)
-            ->field('id,username,real_name,money,member_id,created_at')
+            ->where($where)
+            ->field('id,username,phone,real_name,money,member_id,created_at')
             ->order('id desc')
             ->select();
 
@@ -219,6 +231,19 @@ class Users extends Base
             json(['code' => 201,'msg' => $model->getError()]);
     }
 
+    /**
+     * 推广赚钱
+     *
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function promote()
+    {
+        $promote = Db::name('system_promote')->find();
+        return json(['code' => 200,'data' => $promote]);
+    }
 
 
     public function test()

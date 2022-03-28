@@ -35,6 +35,35 @@ class Coupons extends Base
         return json(['code' => 200,'data' => $coupons]);
     }
 
+    public function myCoupons()
+    {
+        $date = date('Y-m-d',time());
+        $page = input('page') ? input('page') : 1;
+        $pageSize = input('page_size') ? input('page_size') : 10;
+        $limit = ($page - 1) * $pageSize;
+
+        $userId = $this->user['id'];
+        $model  = new  UserCoupons();
+        $coupons = $model->where('user_id',$userId)
+            ->limit($limit,$pageSize)
+            ->order('id desc')
+            ->select();
+        foreach ($coupons as $k=>$v){
+            $coupon = $v->coupons;
+            $coupons[$k]['logo'] = $coupon['logo'] ? Env::get('api_path') .$coupon['logo'] : '';
+            $coupons[$k]['title'] = $coupon['title'];
+            $coupons[$k]['content'] = $coupon['content'];
+            $coupons[$k]['start_date'] = $coupon['start_date'];
+            $coupons[$k]['end_date'] = $coupon['end_date'];
+            $coupons[$k]['zhekou'] = $coupon['zhekou'];
+            if($date>$coupon['end_date']){
+                $coupons[$k]['status']  = 2;//已过期
+            }
+            unset( $coupons[$k]['coupons']);
+        }
+        return json(['code' => 200,'data' => $coupons]);
+    }
+
     /**
      * 领取优惠券
      *
