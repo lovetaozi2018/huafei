@@ -175,15 +175,12 @@ class Users extends Base
     {
         $page = input('page') ? input('page') : 1;
         $pageSize = input('page_size') ? input('page_size') : 10;
+        $level = input('level') ? input('level') : 0;
+        $where = [];
         $data = input();
         $limit = ($page - 1) * $pageSize;
-        $where = [];
-        if(isset($data['level']) && !empty($data['level'])){
-            $where[] = ['level', '=', $data['level']];
-        }
         $model = new UserChild();
-        $ids = $model->getChildIds($this->user['id']);
-
+        $ids = $model->getChildIds($this->user['id'],$level);
         if(isset($data['keyword']) && !empty($data['keyword'])){
             $where[] = ['username|real_name|phone', 'like', '%' . $data['keyword'] . '%'];
         }

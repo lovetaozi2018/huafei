@@ -79,21 +79,27 @@ class Recharge extends Model
      */
     public function lists($userId)
     {
+        $date = input('date') ? input('date') : '';
+        $where = [];
+        if($date){
+            $where[] =['month','=',$date];
+        }
         $page = input('page') ? input('page') : 1;
         $pageSize = input('page_size') ? input('page_size') : 5;
         $limit = ($page - 1) * $pageSize;
-        $lists = $this->where('user_id',$userId)
+        $lists = $this->where('user_id', $userId)
+            ->where($where)
             ->order('id desc')
-            ->limit($limit,$pageSize)
+            ->limit($limit, $pageSize)
             ->select();
         $month = $data = [];
-        foreach ($lists as $v){
+        foreach ($lists as $v) {
             $month[] = $v['month'];
         }
         $month = array_unique($month);
         foreach ($month as $m) {
-            foreach ($lists as $k=>$v) {
-                if($v['month'] == $m){
+            foreach ($lists as $k => $v) {
+                if ($v['month'] == $m) {
                     $data[$m][] = $v;
                 }
             }
