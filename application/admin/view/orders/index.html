@@ -58,6 +58,7 @@
                             {/if}
                             {if $v.type == 2 && $v.status == 0}
                             <a data-id="{$v.id}" class="btn btn-sm btn-info edit_btn btn-xs withdraw">提现</a>
+                            <a data-id="{$v.id}" class="btn btn-sm btn-danger edit_btn btn-xs refuse">拒绝</a>
                             {/if}
                             <a data-id="{$v.id}" href="javascript:void(0)" class="btn btn-danger btn-icon btn-circle btn-xs delete" ><i class="fa fa-trash"></i></a>
                         </td>
@@ -86,10 +87,13 @@
         }, function () {
             $.post("{:url('orders/recharge')}", {id: id},
                 function (data) {
-                    if (result.code == 200) {
+                    if (data.code == 200) {
                         layer.msg('充值成功', {icon: 1});
+                        setTimeout(function () {
+                            window.location.href = url;
+                        }, 2000);
                     } else {
-                        layer.msg(result.msg, {icon: 2});
+                        layer.msg(data.msg, {icon: 2});
                     }
                 })
 
@@ -104,10 +108,34 @@
         }, function () {
             $.post("{:url('orders/recharge')}", {id: id},
                 function (data) {
-                    if (result.code == 200) {
-                        layer.msg('充值成功', {icon: 1});
+                    if (data.code == 200) {
+                        layer.msg('提现成功', {icon: 1});
+                        setTimeout(function () {
+                            window.location.href = url;
+                        }, 2000);
                     } else {
-                        layer.msg(result.msg, {icon: 2});
+                        layer.msg(data.msg, {icon: 2});
+                    }
+                })
+
+        });
+    });
+
+    $('.refuse').on('click', function () {
+        var id = $(this).eq(0).attr('data-id');
+        var url = window.location.href;
+        layer.confirm('确认驳回该提现订单吗 ?', {
+            btn: ['确认', '取消'] //按钮
+        }, function () {
+            $.post("{:url('orders/refuse')}", {id: id},
+                function (data) {
+                    if (data.code == 200) {
+                        layer.msg('驳回成功', {icon: 1});
+                        setTimeout(function () {
+                            window.location.href = url;
+                        }, 2000);
+                    } else {
+                        layer.msg(data.msg, {icon: 2});
                     }
                 })
 

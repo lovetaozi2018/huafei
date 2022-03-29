@@ -49,6 +49,40 @@ class Orders extends Base
     }
 
     /**
+     * 手动确认提现
+     *
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function withdraw()
+    {
+        $orderId = input('id');
+        $model = new UserOrder();
+        $res = $model->withdraw($orderId);
+        return $res ? json(['code' => 200]) :
+            json(['code' => 201,'msg' => $model->getError()]);
+    }
+
+    /**
+     * 提现驳回
+     *
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function refuse()
+    {
+        $orderId = input('id');
+        $model = new UserOrder();
+        $res = $model->refuse($orderId);
+        return $res ? json(['code' => 200]) :
+            json(['code' => 201,'msg' => $model->getError()]);
+    }
+
+    /**
      * 删除
      *
      * @return \think\response\Json
@@ -61,6 +95,8 @@ class Orders extends Base
         $res = Db::name('user_order')->where('id',$id)->delete();
         return $res ? json(['code' => 200]) : json(['code' => 201]);
     }
+
+
 
 
 }
