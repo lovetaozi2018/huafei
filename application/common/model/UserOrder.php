@@ -49,7 +49,8 @@ class UserOrder extends Model
         $data = [
             'user_id' => $post['user_id'],
             'amount' => $post['amount'],
-            'phone' => $user['phone'],
+            'type' => 2, //提现
+            'ctime' => date('Y-m-d H:i:s',time()),
             'order_no' => getOrderNo(),
         ];
         $res = $this->allowField(true)->save($data);

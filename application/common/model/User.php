@@ -51,11 +51,11 @@ class User extends Model
             }
             return ['code' => 200, 'user' => $user];
         } catch (ExpiredException $e) {
-            return ['code' => 201, 'msg' => 'token过期'];
+            return ['code' => 210, 'msg' => 'token过期'];
         } catch (Exception $e) {
-            return ['code' => 202, 'msg' => $e->getMessage(),];
+            return ['code' => 210, 'msg' => $e->getMessage(),];
         }catch (\Exception $e) {
-            return ['code' => 203, 'msg' => 'token错误'];
+            return ['code' => 210, 'msg' => 'token错误'];
         }
     }
 
