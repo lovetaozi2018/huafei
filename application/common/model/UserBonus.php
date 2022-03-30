@@ -11,12 +11,13 @@ class UserBonus extends Model
      * 获取父级对碰奖励
      *
      * @param $userId
+     * @param $getMemberId|当前金额达到的会员等级id
      * @return array
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public function settleBonus($userId)
+    public function settleBonus($userId,$getMemberId)
     {
         $childIds = $childIds1 = $childIds2 = $fathers = [];
         $model = new User();
@@ -27,8 +28,12 @@ class UserBonus extends Model
         $children = Db::name('user')->where('father_id', $fatherId)
             ->where('member_id', '<>', 0)
             ->select();
-        foreach ($children as $k => $v) {
-            $childIds1[] = $v['id'];
+        if(sizeof($children) != 0){
+            foreach ($children as $k => $v) {
+                $childIds1[] = $v['id'];
+            }
+        }else{
+            return [];
         }
         //查询父级下已经对碰过的会员id
         $userBonus = $this->where('user_id', $fatherId)
@@ -37,37 +42,64 @@ class UserBonus extends Model
             $childIds2[] = $u['user1_id'];
             $childIds2[] = $u['user2_id'];
         }
-        $childIds2 = array_unique($childIds2); //去重
+        $childIds2 = array_unique($childIds2); //去重,
         // 获取没有对碰过的子级($childIds1包含所有的子级,则两者的不同部分就是未对碰的用户)
         $childIds = array_diff($childIds1, $childIds2);
+        //如果未对碰过的用户中包含用户自己，则把该用户筛选出去，不能和自己对碰
+        if(in_array($userId,$childIds)){
+            $childIds = array_diff($childIds, [$userId]);
+        }
         if (empty($childIds)) {
             return [];
         }
         $childId = $childIds[0];
-        $child = Db::name('user')->where('id', $childId)->find();
-        $father = Db::name('user')->where('id', $fatherId)->find();
-        $memberIds = [$child['member_id'], $father['member_id'], $user['member_id']];
+        $childLevel = $this->getUserLevel($childId);//另一个对碰用户的会员等级
+        $fatherLevel = $this->getUserLevel($fatherId);//父级的会员等级
+        $userLevel = Db::name('member_set')->where('id',$getMemberId)->find()['level'];
+        $level = [$childLevel,$fatherLevel, $userLevel];
         // 比较三者的会员等级
-        $this->insertSort($memberIds);
-        $minMemberId = $memberIds[0];
+        $this->insertSort($level);
+        $minLevel = $level[0];
+        $minMember = Db::name('member_set')->where('level',$minLevel)->find();
         foreach ($fathers as $k => $f) {
             $fathers[$k]['user_id'] = $f['father_id'];
-            $fathers[$k]['member_id'] = $minMemberId;
-            $fathers[$k]['from_user_id'] = $userId;
+            $fathers[$k]['member_id'] = $minMember['id'];
             $fathers[$k]['user1_id'] = $userId;
             $fathers[$k]['user2_id'] = $childId;
             $fathers[$k]['date'] = date('Y-m-d', time());
             $fathers[$k]['level'] = $f['level'];
             $bonusPercent = Db::name('member_bonus_percent')->where('level', $f['level'])->find(); //收益百分比
             $percent = $bonusPercent ? ($bonusPercent['percent'] / 100) : 0;
-            $memberSet = Db::name('member_set')->where('id', $minMemberId)->find();
-            $bonus = $memberSet['bonus']; //会员等级对碰奖金
+            $bonus = $minMember['bonus']; //会员等级对碰奖金
             $amount = $bonus * $percent; //对碰奖金
-            $fathers[$k]['amount'] = $amount;
+            $fathers[$k]['amount'] = $minMember['amount'];
+            $fathers[$k]['bonus'] = $amount;
+            unset($fathers[$k]['father_id']);
+            if(!$bonusPercent){
+                unset($fathers[$k]);
+            }
         }
 
         return $fathers;
 
+    }
+
+    /**
+     * 根据用户id获取用户的会员等级
+     *
+     * @param $uid
+     * @return int|mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function getUserLevel($uid)
+    {
+        $level = 0;
+        $user = Db::name('user')->where('id', $uid)->find();
+        $member = Db::name('member_set')->where('id',$user['member_id'])->find();
+        $level = $member ?  $member['level'] : 0;
+        return $level;
     }
 
     /**

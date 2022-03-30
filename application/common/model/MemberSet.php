@@ -35,10 +35,9 @@ class MemberSet extends Model
             $set = $this->where('amount','<',$amount)->order('id desc')->find();
             $memberId = $set['id'];
         }
-
         return $memberId;
-
     }
+
 
     public static function set($id)
     {

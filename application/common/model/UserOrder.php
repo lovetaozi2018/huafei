@@ -107,12 +107,14 @@ class UserOrder extends Model
         $user->money = ($user['money']+$data['amount']);
         $setModel = new MemberSet();
         // 获取充值金额能达到的会员等级
+        $memberLevel = 0;
         $getMemberId = $setModel->getMemberId($data['amount']);
         if($getMemberId){
             $getMember = MemberSet::where('id',$getMemberId)->find();
             $memberId = $user['member_id'];
             $member = MemberSet::where('id',$memberId)->find(); //当前会员等级
-            if($getMember['level'] > $member['level']){ //如果会员等级提高，则更新会员等级
+            $memberLevel = $member ? $member['level'] : 0;
+            if($getMember['level'] > $memberLevel){ //如果会员等级提高，则更新会员等级
                 $user->member_id = $getMemberId;
             }
         }
@@ -123,10 +125,11 @@ class UserOrder extends Model
             return false;
         }
         // 如果会员等级提升,则发生对碰
-        if($getMemberId && ($getMember['level'] > $member['level'])){
+        if($getMemberId && ($getMember['level'] > $memberLevel)){
             $model = new UserBonus();
             $userModel = new User();
-            $userBonus = $model->settleBonus($user['id']);
+            $userBonus = $model->settleBonus($user['id'],$getMemberId);
+            tlogs($userBonus);
             $rows = [];
             if(sizeof($userBonus) != 0){
                 $res = $model->allowField(true)->insertAll($userBonus);
@@ -136,7 +139,7 @@ class UserOrder extends Model
                     return false;
                 }
                 foreach ($userBonus as $u){
-                    $father = $this->where('id',$u['user_id'])->find();
+                    $father = $userModel->where('id',$u['user_id'])->find();
                     $rows[] = [
                         'id' => $u['user_id'],
                         'bonus' => $father['bonus'] + $u['amount'],

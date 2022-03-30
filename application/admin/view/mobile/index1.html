@@ -13,11 +13,11 @@
         <div class="navbar navbar-default">
             <form action="" id="search-form2" class="navbar-form form-inline" method="get" onsubmit="return false">
                 <label class="control-label">姓名</label>
-                <input type="text" name="real_name" value="" placeholder="请输入姓名" class="form-control">
+                <input type="text" name="real_name" value="{$Think.get.real_name}" placeholder="请输入姓名" class="form-control">
                 <label class="control-label">手机号</label>
-                <input type="text" name="phone" value="" placeholder="请输入手机号" class="form-control">
+                <input type="text" name="phone" value="{$Think.get.phone}" placeholder="请输入手机号" class="form-control">
                 <label class="control-label">单号</label>
-                <input type="text" name="order_no" value="" placeholder="请输入单号" class="form-control">
+                <input type="text" name="order_no" value="{$Think.get.order_no}" placeholder="请输入单号" class="form-control">
                 <label class="control-label">&nbsp;状态</label>
                 <select class="form-control" name="status">
                     <option value="3">全部</option>
@@ -27,10 +27,10 @@
                 </select>
                 <label class="control-label">&nbsp;日期</label>
                 <div class="input-group date">
-                    <input type="text" class="form-control" name="start_date" placeholder="开始日期" id="start_date">
+                    <input type="text" class="form-control" name="start_date" placeholder="开始日期" id="start_date" value="{$Think.get.start_date}">
                 </div>
                 <div class="input-group date">
-                    <input type="text" class="form-control" name="end_date"  placeholder="结束日期" id="end_date">
+                    <input type="text" class="form-control" name="end_date"  placeholder="结束日期" id="end_date" value="{$Think.get.end_date}">
                 </div>
                 <button type="submit" onclick="javascript:document.getElementById('search-form2').submit();"
                         id="button-filter search-order" class="btn btn-primary"><i class="fa fa-search"></i>
