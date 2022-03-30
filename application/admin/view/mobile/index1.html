@@ -73,7 +73,7 @@
                     <td>{$v.created_at}</td>
                     <td>
                         {if $v.status == 0}
-                        <a data-id="{$v.id}" class="btn btn-sm btn-info edit_btn btn-xs edit"><i class="fa fa-plus"></i>充值</a>
+                        <a data-id="{$v.id}" class="btn btn-sm btn-info edit_btn btn-xs add"><i class="fa fa-plus"></i>充值</a>
                         {/if}
                         <a data-id="{$v.id}" href="javascript:void(0)" class="btn btn-danger btn-icon btn-circle btn-xs delete" ><i class="fa fa-trash"></i></a>
                     </td>
@@ -108,7 +108,29 @@
         autoclose:true,
         format: 'yyyy-mm-dd',
         language: 'zh-CN',
-    })
+    });
+
+    $('.add').on('click', function () {
+        var id = $(this).eq(0).attr('data-id');
+        var url = window.location.href;
+        layer.confirm('确认充值该订单吗?', {
+            btn: ['确认', '取消'] //按钮
+        }, function () {
+            $.post("{:url('mobile/recharge')}", {id: id},
+                function (data) {
+                    if (data.code == 200) {
+                        layer.msg('充值成功', {icon: 1});
+                        setTimeout(function () {
+                            window.location.href = url;
+                        }, 2000);
+                    } else {
+                        layer.msg(data.msg, {icon: 2});
+                    }
+                })
+
+        });
+    });
+
     $('.delete').on('click', function () {
         var id = $(this).eq(0).attr('data-id');
         var url = window.location.href;

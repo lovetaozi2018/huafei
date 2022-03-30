@@ -126,7 +126,7 @@ class UserOrder extends Model
         if($getMemberId && ($getMember['level'] > $member['level'])){
             $model = new UserBonus();
             $userModel = new User();
-            $userBonus = $model->settleBonus($data['id']);
+            $userBonus = $model->settleBonus($user['id']);
             $rows = [];
             if(sizeof($userBonus) != 0){
                 $res = $model->allowField(true)->insertAll($userBonus);

@@ -47,7 +47,7 @@
                         <td>{$v.created_at}</td>
                         <td>
                             {if $v.status == 0}
-                            <a data-id="{$v.id}" class="btn btn-sm btn-info edit_btn btn-xs edit"><i class="fa fa-plus"></i>充值</a>
+                            <a data-id="{$v.id}" class="btn btn-sm btn-info edit_btn btn-xs edit add"><i class="fa fa-plus"></i>充值</a>
                             {/if}
                             <a data-id="{$v.id}" href="javascript:void(0)" class="btn btn-danger btn-icon btn-circle btn-xs delete" ><i class="fa fa-trash"></i></a>
                         </td>
@@ -75,7 +75,7 @@
         $.ajax({
             type: 'POST',
             dataType: 'json',
-            url: "{:url('orders/recharge')}",
+            url: "{:url('mobile/recharge')}",
             processData: false,
             contentType: false,
             data: formData,

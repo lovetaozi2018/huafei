@@ -32,7 +32,6 @@ class UserBonus extends Model
         }
         //查询父级下已经对碰过的会员id
         $userBonus = $this->where('user_id', $fatherId)
-            ->where('type', 1)
             ->select();
         foreach ($userBonus as $u) {
             $childIds2[] = $u['user1_id'];

@@ -82,7 +82,7 @@
     $('.add').on('click', function () {
         var id = $(this).eq(0).attr('data-id');
         var url = window.location.href;
-        layer.confirm('确认充值该订单吗 ?', {
+        layer.confirm('确认充值该订单吗?', {
             btn: ['确认', '取消'] //按钮
         }, function () {
             $.post("{:url('orders/recharge')}", {id: id},
@@ -103,7 +103,7 @@
     $('.withdraw').on('click', function () {
         var id = $(this).eq(0).attr('data-id');
         var url = window.location.href;
-        layer.confirm('确认提现该订单吗 ?', {
+        layer.confirm('确认提现该订单吗?', {
             btn: ['确认', '取消'] //按钮
         }, function () {
             $.post("{:url('orders/recharge')}", {id: id},
@@ -124,7 +124,7 @@
     $('.refuse').on('click', function () {
         var id = $(this).eq(0).attr('data-id');
         var url = window.location.href;
-        layer.confirm('确认驳回该提现订单吗 ?', {
+        layer.confirm('确认驳回该提现订单吗?', {
             btn: ['确认', '取消'] //按钮
         }, function () {
             $.post("{:url('orders/refuse')}", {id: id},
@@ -145,7 +145,7 @@
     $('.delete').on('click', function () {
         var id = $(this).eq(0).attr('data-id');
         var url = window.location.href;
-        layer.confirm('确认删除该数据吗 ?', {
+        layer.confirm('确认删除该数据吗?', {
             btn: ['确认', '取消'] //按钮
         }, function () {
             $.post('{:url("orders/delete")}', {id: id},

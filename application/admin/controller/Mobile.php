@@ -2,7 +2,7 @@
 
 namespace app\admin\controller;
 
-use app\admin\model\UserOrder;
+use app\admin\model\MobileRecharge;
 use app\common\model\Recharge;
 
 
@@ -50,7 +50,6 @@ class Mobile extends Base
                 $where[] = ['status', '=', $param['status']];
             }
         }
-
         if (isset($param['start_date']) && !empty($param['start_date'])) {
             $where[] = ['date', '>=', $param['start_date']];
         }
@@ -58,9 +57,7 @@ class Mobile extends Base
         if (isset($param['end_date']) && !empty($param['end_date'])) {
             $where[] = ['date', '<=', $param['end_date']];
         }
-
         $model = new Recharge();
-
         $orders = $model->where($where)
             ->order('id asc')
             ->paginate();
@@ -79,7 +76,7 @@ class Mobile extends Base
     }
 
     /**
-     * 手动充值
+     * 话费手动充值
      *
      * @return \think\response\Json
      * @throws \think\db\exception\DataNotFoundException
@@ -89,8 +86,8 @@ class Mobile extends Base
     public function recharge()
     {
         $orderId = input('id');
-        $model = new UserOrder();
-        $res = $model->addRecharge($orderId);
+        $model = new MobileRecharge();
+        $res = $model->adds($orderId);
         return $res ? json(['code' => 200]) :
             json(['code' => 201,'msg' => $model->getError()]);
     }
