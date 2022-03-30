@@ -349,6 +349,7 @@ class User extends Model
         $user = $this->where('id', $post['user_id'])->find();
         $user->id_card = $post['id_card'];
         $user->real_name = $post['real_name'];
+        $user->rstatus = 1;
         $res = $user->save();
         return $res ? true : false;
     }

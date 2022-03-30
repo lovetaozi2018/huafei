@@ -145,12 +145,13 @@ class UserBonus extends Model
 
         $limit = ($page - 1) * $pageSize;
         $lists = $this->where('user_id', $userId)
-            ->field('id,user_id,amount,level,created_at')
+            ->field('id,user_id,bonus,level,created_at')
             ->order('id desc')
             ->limit($limit, $pageSize)
             ->select();
         foreach ($lists as $k => $v) {
             $lists[$k]['real_name'] = $v->user->real_name;
+            $lists[$k]['amount'] = $v['bonus'];
             unset($lists[$k]['user']);
         }
 

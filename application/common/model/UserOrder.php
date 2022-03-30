@@ -129,7 +129,6 @@ class UserOrder extends Model
             $model = new UserBonus();
             $userModel = new User();
             $userBonus = $model->settleBonus($user['id'],$getMemberId);
-            tlogs($userBonus);
             $rows = [];
             if(sizeof($userBonus) != 0){
                 $res = $model->allowField(true)->insertAll($userBonus);
