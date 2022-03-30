@@ -136,9 +136,9 @@ class UserOrder extends Model
                     return false;
                 }
                 foreach ($userBonus as $u){
-                    $father = $this->where('id',$u['father_id'])->find();
+                    $father = $this->where('id',$u['user_id'])->find();
                     $rows[] = [
-                        'id' => $u['father_id'],
+                        'id' => $u['user_id'],
                         'bonus' => $father['bonus'] + $u['amount'],
                     ];
                 }

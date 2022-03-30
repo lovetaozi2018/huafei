@@ -35,31 +35,34 @@ class Mobile extends Base
         $param = $this->request->param();
         $where = [];
         if (isset($param['real_name']) && !empty($param['real_name'])) {
-            $where[] = ['real_name', 'like', '%' . $param['real_name'] . '%'];
+            $where[] = ['b.real_name', 'like', '%' . $param['real_name'] . '%'];
         }
         if (isset($param['phone']) && !empty($param['phone'])) {
-            $where[] = ['phone', 'like', '%' . $param['phone'] . '%'];
+            $where[] = ['a.phone', 'like', '%' . $param['phone'] . '%'];
         }
         if (isset($param['order_no']) && !empty($param['order_no'])) {
-            $where[] = ['order_no', 'like', '%' . $param['order_no'] . '%'];
+            $where[] = ['a.order_no', 'like', '%' . $param['order_no'] . '%'];
         }
         if (isset($param['status'])) {
             if($param['status'] == 3){
-                $where[] = ['status', 'in', [0,1,2]];
+                $where[] = ['a.status', 'in', [0,1,2]];
             }else{
-                $where[] = ['status', '=', $param['status']];
+                $where[] = ['a.status', '=', $param['status']];
             }
         }
         if (isset($param['start_date']) && !empty($param['start_date'])) {
-            $where[] = ['date', '>=', $param['start_date']];
+            $where[] = ['a.date', '>=', $param['start_date']];
         }
 
         if (isset($param['end_date']) && !empty($param['end_date'])) {
-            $where[] = ['date', '<=', $param['end_date']];
+            $where[] = ['a.date', '<=', $param['end_date']];
         }
         $model = new Recharge();
-        $orders = $model->where($where)
-            ->order('id asc')
+        $orders = $model->alias('a')
+            ->field('a.*,b.real_name')
+            ->join('user b','a.user_id=b.id')
+            ->where($where)
+            ->order('a.id desc')
             ->paginate();
 
         $orders->appends($param);
