@@ -87,11 +87,11 @@
         var username = $('#username').val();
         var password = $('#password').val();
         if (!username) {
-            layer.msg("用户名不能为空");
+            layer.msg("用户名不能为空",{icon: 2});
             return false;
         }
         if (!password) {
-            layer.msg("密码不能为空");
+            layer.msg("密码不能为空",{icon: 2});
             return false;
         }
 

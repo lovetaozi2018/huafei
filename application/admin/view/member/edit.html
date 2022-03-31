@@ -123,12 +123,12 @@
         var profit = $('#profit').val();
         var reflush = $('#reflush').val();
         if (!level) {
-            layer.msg("等级不能为空");
+            layer.msg("等级不能为空",{icon: 2});
             return false;
         }
 
         if (!amount) {
-            layer.msg("金额不能为空");
+            layer.msg("金额不能为空",{icon: 2});
             return false;
         }
         if(id){formData.append("id", id);}

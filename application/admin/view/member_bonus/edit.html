@@ -54,12 +54,12 @@
         var level = $('#level').val();
         var percent = $('#percent').val();
         if (!level) {
-            layer.msg("等级不能为空");
+            layer.msg("等级不能为空",{icon: 2});
             return false;
         }
 
         if (!percent) {
-            layer.msg("百分比不能为空");
+            layer.msg("百分比不能为空",{icon: 2});
             return false;
         }
         if(id){formData.append("id", id);}

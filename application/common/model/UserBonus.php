@@ -52,6 +52,7 @@ class UserBonus extends Model
         if (empty($childIds)) {
             return [];
         }
+        sort($childIds);
         $childId = $childIds[0];
         $childLevel = $this->getUserLevel($childId);//另一个对碰用户的会员等级
         $fatherLevel = $this->getUserLevel($fatherId);//父级的会员等级

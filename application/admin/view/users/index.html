@@ -74,7 +74,10 @@
                             <a href="{:url('users/members',['id'=> $v.id])}" class="btn btn-sm btn-primary btn-xs">我的团队</a>
                             <a data-id="{$v.id}" title="默认重置密码为123456" class="btn btn-sm btn-info  btn-xs reset">重置密码</a>
                             <a href="{:url('users/edit',['id'=> $v.id])}" class="btn btn-success btn-icon btn-circle btn-xs">充值</a>
-                            <a data-id="{$v.id}" class="btn btn-sm btn-warning btn-xs forbidden">禁用</a>
+                            {if $v.status == 1} <a data-id="{$v.id}" class="btn btn-sm btn-warning btn-xs forbidden">禁用</a>
+                            {else if $v.status==0 /}<a data-id="{$v.id}" class="btn btn-sm btn-primary btn-xs open">启用</a>
+                            {/if}
+
                             <a href="{:url('users/detail',['id'=> $v.id])}" class="btn btn-sm btn-info btn-xs">详情</a>
                             <a data-id="{$v.id}" href="javascript:void(0)" class="btn btn-danger btn-icon btn-circle btn-xs delete"><i class="fa fa-trash"></i></a>
                         </td>
@@ -122,7 +125,7 @@
         layer.confirm('确认禁用该用户吗 ?', {
             btn: ['确认', '取消'] //按钮
         }, function () {
-            $.post('{:url("users/forbidden")}', {id: id},
+            $.post('{:url("users/power")}', {id: id,type:2},
                 function (data) {
                     if (data.code == 200) {
                         layer.msg(' 禁用成功', {icon: 1});
@@ -131,6 +134,28 @@
                         }, 2000);
                     } else {
                         layer.msg('禁用失败', {icon: 2});
+                    }
+                })
+
+        });
+    });
+
+    // 启用
+    $('.open').on('click', function () {
+        var id = $(this).eq(0).attr('data-id');
+        var url = window.location.href;
+        layer.confirm('确认启用该用户吗 ?', {
+            btn: ['确认', '取消'] //按钮
+        }, function () {
+            $.post('{:url("users/power")}', {id: id,type:1},
+                function (data) {
+                    if (data.code == 200) {
+                        layer.msg(' 启用成功', {icon: 1});
+                        setTimeout(function () {
+                            window.location.href = url;
+                        }, 2000);
+                    } else {
+                        layer.msg('启用失败', {icon: 2});
                     }
                 })
 

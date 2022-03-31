@@ -38,7 +38,7 @@
         var id = $('#id').val();
         var amount = $('#amount').val();
         if (!amount) {
-            layer.msg("金额不能为空");
+            layer.msg("金额不能为空",{icon: 2});
             return false;
         }
         formData.append("id", id);

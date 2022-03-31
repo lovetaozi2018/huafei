@@ -144,22 +144,24 @@ class Users extends Base
     }
 
     /**
-     * 禁用用户
-     *
+     * 启用/禁用用户
+     * $type:1:启用,2:禁用
      * @return \think\response\Json
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public function forbidden()
+    public function power()
     {
         $id = input('id');
+        $type = input('type');
         $model = new User();
         $user = $model->where('id',$id)->find();
-        $user->status = 0;
+        $user->status = $type == 1 ? 1 : 0;
         $res = $user->save();
         return $res ? json(['code' => 200]) : json(['code' => 201]);
     }
+
 
     public function members()
     {
