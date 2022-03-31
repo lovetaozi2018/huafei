@@ -27,8 +27,17 @@ class Orders extends Base
             return $res ? json(['code' => 200, 'msg' => '订单添加成功']) :
                 json(['code' => 201, 'msg' => '订单添加失败']);
         }
-        $money = Db::name('member_set')->field('id,level,money')->select();
-        return json(['code' => 200, 'data' => $money]);
+        $recharge = Db::name('system_recharge')->find();
+        $money = explode('|',$recharge['content']);
+        $data = [];
+        foreach ($money as $k => $v){
+            $data[] = [
+                'id' =>$k+1,
+                'level' => $k+1,
+                'money' => $v,
+            ];
+        }
+        return json(['code' => 200, 'data' => $data]);
 
     }
 

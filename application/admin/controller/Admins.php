@@ -2,6 +2,7 @@
 namespace app\admin\controller;
 
 use app\admin\model\Admin;
+use app\admin\model\SystemBonus;
 use app\admin\model\SystemMobile;
 use app\admin\model\SystemPromote;
 use think\Db;
@@ -75,6 +76,30 @@ class Admins extends Base
         return $this->fetch();
 
     }
+
+    /**
+     * 话费金额设置
+     *
+     * @return false|mixed|string
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function bonus()
+    {
+        if($this->request->isAjax()){
+            $data = input();
+            $bonus = SystemBonus::find($data['id']);
+            $bonus->content = $data['content'];
+            $res = $bonus->save();
+            return $res ? json(['code' => 200]) : json(['code'=>201]);
+        }
+        $bonus = Db::name('system_bonus')->find();
+        $this->assign('bonus', $bonus);
+        return $this->fetch();
+
+    }
+
 
     /**
      * 话费金额设置

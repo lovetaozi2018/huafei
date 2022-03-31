@@ -136,6 +136,9 @@ class Users extends Base
      * 团队明细
      *
      * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
      */
     public function memberDetails()
     {

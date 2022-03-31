@@ -32,7 +32,6 @@
                         <th>单日充值上限</th>
                         <th>盈利上限</th>
                         <th>复冲限制</th>
-                        <th>充值金额</th>
                         <th>操作</th>
                     </tr>
                     </thead>
@@ -57,7 +56,6 @@
                             {else /}<i class="fa fa-cny"></i>{$v.reflush}
                             {/if}
                         </td>
-                        <td>{$v.money}</td>
                         <td>
                             <a href="{:url('member/edit',['id'=> $v.id])}"
                                class="btn btn-success btn-icon btn-circle btn-xs">编辑</a>

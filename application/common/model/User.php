@@ -392,13 +392,14 @@ class User extends Model
     }
 
 
-
-
     /**
      * 团队明细
      *
      * @param $userId
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
      */
     public function memberDetails($userId)
     {
@@ -411,7 +412,8 @@ class User extends Model
         $bonus = Db::name('user_bonus')->where('user_id','in',$ids)
             ->where('date',$date)
             ->sum('bonus');
-        $url = '?uid='.$userId;
+        $user = $this->where('id',$userId)->find();
+        $url = $user['member_id'] ? '?uid='.$userId : '';
 
         $data = [
             'total_bonus' => $totalBonus,
